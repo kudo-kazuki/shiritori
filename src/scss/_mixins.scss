@@ -1,0 +1,24 @@
+@mixin center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin page {
+    display: flex;
+    flex-direction: column;
+    width: $contentWidth;
+    margin: 0 auto;
+    height: 100%;
+    padding: 16px;
+    row-gap: 16px;
+
+    @media (max-width: ($contentWidth + 20px)) {
+        width: 100%;
+    }
+
+    @media (max-width: 767px) {
+        row-gap: 12px;
+        padding: 12px;
+    }
+}
