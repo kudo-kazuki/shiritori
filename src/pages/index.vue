@@ -2,6 +2,9 @@
 import { onMounted } from 'vue'
 import { useWindowHeight } from '@/composables/useWindowHeight'
 import { useWindowWidthAndDevice } from '@/composables/useWindowWidthAndDevice'
+import { useGameStore } from '@/stores/game'
+
+const gameStore = useGameStore()
 
 const { windowHeight } = useWindowHeight()
 const { windowWidth, deviceType } = useWindowWidthAndDevice()
@@ -23,7 +26,8 @@ onMounted(() => {})
         :data-device="deviceType"
         :data-windowWidth="windowWidth"
     >
-        あああううう
+        <SettingStart v-if="!gameStore.isGameStart && !gameStore.isDebug" />
+        <GameStage v-if="gameStore.isGameStart" />
     </div>
 </template>
 <style lang="scss" scoped>
@@ -33,6 +37,8 @@ onMounted(() => {})
     display: flex;
     justify-content: center;
     align-items: center;
+    background: url(/src/assets/images/bg.jpg) no-repeat center bottom;
+    background-size: cover;
 
     &__cpuThinking {
         position: fixed;
