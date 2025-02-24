@@ -7,7 +7,7 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {})
 
-// `score` が奇数のとき、最後にダミーの `●` を追加
+// `score` が奇数のとき、2番目にダミーの `●` を追加
 const scoreList = computed<Array<number | null>>(() => {
     if (!props.score || props.score <= 0) return []
 
@@ -46,10 +46,12 @@ const scoreList = computed<Array<number | null>>(() => {
 
 <style lang="scss" scoped>
 $scoreSize: 30px;
+$scoreSizeSp: 12px;
 
 .GameScore {
     width: 104px;
     height: 100%;
+    flex-shrink: 0;
     background-color: #111;
     border-radius: 10px;
     border: 6px solid #ccc;
@@ -79,6 +81,30 @@ $scoreSize: 30px;
 
         &--dummy {
             background-color: transparent;
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        width: 100%;
+        height: auto;
+        border-width: 3px;
+
+        &__inner {
+            height: $scoreSizeSp * 2;
+            justify-content: center;
+        }
+
+        &__scores {
+            justify-content: flex-start;
+        }
+
+        &__score {
+            width: $scoreSizeSp;
+            height: $scoreSizeSp;
+
+            &--dummy {
+                display: none;
+            }
         }
     }
 }

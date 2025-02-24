@@ -5,5 +5,5 @@ $text-color1: #08192d;
 $contentWidth: 1300px;
 
 @function vw($value) {
-    @return calc(#{$value}vw * 100 / 740);
+    @return calc(#{$value}vw * 100 / 1224);
 }

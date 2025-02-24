@@ -16,7 +16,9 @@ const preloadImages = (paths: string[]) => {
     })
 }
 
-onMounted(() => {})
+onMounted(() => {
+    gameStore.startGame()
+})
 </script>
 
 <template>

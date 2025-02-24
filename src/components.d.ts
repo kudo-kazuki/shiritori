@@ -13,6 +13,7 @@ declare module 'vue' {
     Effect: typeof import('./components/Effect/index.vue')['default']
     GameInfo: typeof import('./components/GameInfo.vue')['default']
     GameMain: typeof import('./components/GameMain.vue')['default']
+    GamePanel: typeof import('./components/GamePanel.vue')['default']
     GameScore: typeof import('./components/GameScore.vue')['default']
     GameShiritoiArea: typeof import('./components/GameShiritoiArea.vue')['default']
     GameStage: typeof import('./components/GameStage.vue')['default']
