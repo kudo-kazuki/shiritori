@@ -29,9 +29,10 @@ onMounted(() => {
         :data-windowWidth="windowWidth"
     >
         <SettingStart v-if="!gameStore.isGameStart && !gameStore.isDebug" />
-        <GameStage v-if="gameStore.isGameStart" />
+        <Stage v-if="gameStore.isGameStart" />
     </div>
 </template>
+
 <style lang="scss" scoped>
 .Page {
     overflow: hidden;

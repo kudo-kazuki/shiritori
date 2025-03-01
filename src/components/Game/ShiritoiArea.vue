@@ -18,13 +18,18 @@ const adjustPanelSize = () => {
     })
 }
 
+const isAdjustCompleted = ref(false)
+
 // コンポーネントがマウントされたら高さを調整
-onMounted(() => {
-    nextTick(() => {
-        // DOM更新を確実に待つ
+onMounted(async () => {
+    await nextTick()
+
+    setTimeout(() => {
         adjustPanelSize()
-        window.addEventListener('resize', adjustPanelSize) // ウィンドウサイズ変更時も更新
-    })
+        isAdjustCompleted.value = true
+    }, 1)
+
+    window.addEventListener('resize', adjustPanelSize) // ウィンドウサイズ変更時も更新
 })
 
 // コンポーネントが破棄されたらイベントリスナーを削除
@@ -34,14 +39,17 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <ul class="GameShiritoiArea">
+    <ul
+        class="GameShiritoiArea"
+        :class="{ 'GameShiritoiArea--adjustCompleted': isAdjustCompleted }"
+    >
         <li
             v-for="panel in panelStore.panels"
             :key="panel.id"
             class="GameShiritoiArea__panel"
             ref="panelRef"
         >
-            <GamePanel v-bind="panel" />
+            <Panel v-bind="panel" />
         </li>
     </ul>
 </template>
@@ -57,6 +65,12 @@ onBeforeUnmount(() => {
     justify-content: space-between;
     align-items: center;
     padding: 0 4px;
+    opacity: 0;
+    transition: 0.2s ease opacity;
+
+    &--adjustCompleted {
+        opacity: 1;
+    }
 
     &__panel {
         width: calc((100% / 9) - 4px);

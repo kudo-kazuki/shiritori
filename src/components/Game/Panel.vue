@@ -14,7 +14,7 @@ const imgPath = computed(() => {
 })
 
 const onClick = () => {
-    gameStore.selectPanel(props.id)
+    gameStore.selectPanel(props.id, true)
 }
 </script>
 

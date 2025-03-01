@@ -7,22 +7,17 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Board: typeof import('./components/Board.vue')['default']
-    Cell: typeof import('./components/Cell.vue')['default']
-    CircleAura: typeof import('./components/Effect/Effects/CircleAura.vue')['default']
-    Effect: typeof import('./components/Effect/index.vue')['default']
-    GameInfo: typeof import('./components/GameInfo.vue')['default']
-    GameMain: typeof import('./components/GameMain.vue')['default']
-    GamePanel: typeof import('./components/GamePanel.vue')['default']
-    GameScore: typeof import('./components/GameScore.vue')['default']
-    GameShiritoiArea: typeof import('./components/GameShiritoiArea.vue')['default']
-    GameStage: typeof import('./components/GameStage.vue')['default']
+    Bottom: typeof import('./components/Game/Bottom.vue')['default']
+    ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
+    Main: typeof import('./components/Game/Main.vue')['default']
+    Panel: typeof import('./components/Game/Panel.vue')['default']
     Radio: typeof import('./components/Radio.vue')['default']
-    Result: typeof import('./components/Result.vue')['default']
-    Rose: typeof import('./components/Effect/Effects/Rose.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Score: typeof import('./components/Game/Score.vue')['default']
     SettingStart: typeof import('./components/SettingStart.vue')['default']
-    Stone: typeof import('./components/Stone.vue')['default']
+    ShiritoiArea: typeof import('./components/Game/ShiritoiArea.vue')['default']
+    Stage: typeof import('./components/Game/Stage.vue')['default']
+    TimeLimit: typeof import('./components/Game/TimeLimit.vue')['default']
   }
 }

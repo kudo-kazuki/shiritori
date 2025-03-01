@@ -5,7 +5,8 @@ const gameStore = useGameStore()
 
 <template>
     <section class="GameStage">
-        <GameMain />
+        <Main />
+        <Bottom />
     </section>
 </template>
 
@@ -13,5 +14,9 @@ const gameStore = useGameStore()
 .GameStage {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    row-gap: 12px;
 }
 </style>

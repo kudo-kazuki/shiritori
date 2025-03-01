@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { allPanelData } from '@/data/panelData'
+import { useWindowHeight } from '@/composables/useWindowHeight'
+import { useWindowWidthAndDevice } from '@/composables/useWindowWidthAndDevice'
+
+const { windowHeight } = useWindowHeight()
+const { windowWidth, deviceType } = useWindowWidthAndDevice()
 
 // マスターデータを単純に参照
 const allPanelDataRef = allPanelData
@@ -155,50 +160,129 @@ const startsAndEnds = computed(() => {
 </script>
 
 <template>
-    <div>
-        <h1>Panel Master List</h1>
-        <!-- ① マスターデータのテーブル表示 -->
-        <table border="1" cellpadding="8">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Image</th>
-                    <th>Words</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="panel in allPanelData" :key="panel.id">
-                    <td>{{ panel.id }}</td>
-                    <td>
-                        <!-- id から画像を参照 -->
-                        <img
-                            :src="`/src/assets/images/panels/${panel.id}.png`"
-                            alt=""
-                            width="80"
-                        />
-                    </td>
-                    <td>{{ panel.words.join(' / ') }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div
+        class="Page"
+        :style="{ height: `${windowHeight}px` }"
+        :data-device="deviceType"
+        :data-windowWidth="windowWidth"
+    >
+        <el-scrollbar>
+            <main class="Page__main">
+                <div class="Page__tableWrap">
+                    <!-- ① マスターデータのテーブル表示 -->
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Words</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="panel in allPanelData" :key="panel.id">
+                                <td>{{ panel.id }}</td>
+                                <td>
+                                    <!-- id から画像を参照 -->
+                                    <img
+                                        :src="`/src/assets/images/panels/${panel.id}.png`"
+                                        alt=""
+                                        width="80"
+                                    />
+                                </td>
+                                <td>{{ panel.words.join(' / ') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        <h2>Starts / Ends Count</h2>
-        <!-- ② 頭文字・末尾文字の集計結果を表示するテーブル -->
-        <table border="1" cellpadding="8">
-            <thead>
-                <tr>
-                    <th>文字</th>
-                    <th>頭文字の数</th>
-                    <th>末尾の数</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="item in startsAndEnds" :key="item.char">
-                    <td>{{ item.char }}</td>
-                    <td>{{ item.startCount }}</td>
-                    <td>{{ item.endCount }}</td>
-                </tr>
-            </tbody>
-        </table>
+                    <!-- ② 頭文字・末尾文字の集計結果を表示するテーブル -->
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>文字</th>
+                                <th>頭文字の数</th>
+                                <th>末尾の数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in startsAndEnds" :key="item.char">
+                                <td>{{ item.char }}</td>
+                                <td :class="{ red: item.startCount === 0 }">
+                                    {{ item.startCount }}
+                                </td>
+                                <td :class="{ red: item.endCount === 0 }">
+                                    {{ item.endCount }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </el-scrollbar>
     </div>
 </template>
+
+<style lang="scss" scoped>
+.Page {
+    overflow: hidden;
+    height: 100vh;
+
+    * {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+
+    &__main {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 16px;
+    }
+
+    &__tableWrap {
+        display: flex;
+        column-gap: 100px;
+        align-items: flex-start;
+    }
+
+    table {
+        thead {
+            tr {
+                th,
+                td {
+                    background-color: #eee;
+                    font-weight: bold;
+                    text-align: center;
+                    padding: 8px;
+                    border: 1px solid #333;
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                th,
+                td {
+                    padding: 8px;
+                    border: 1px solid #333;
+                    vertical-align: middle;
+
+                    &.red {
+                        color: crimson;
+                        font-weight: bold;
+                    }
+
+                    &:first-child {
+                        text-align: center;
+                    }
+                }
+            }
+        }
+    }
+
+    @media screen and (max-width: 740px) {
+    }
+}
+</style>
