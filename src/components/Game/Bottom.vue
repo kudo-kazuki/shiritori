@@ -15,10 +15,7 @@ const gameStore = useGameStore()
                     alt=""
                 />
             </div>
-            <div
-                class="GameBottom__cpuMessage"
-                v-html="gameStore.cpuMessage"
-            ></div>
+            <CpuMessage class="GameBottom__cpuMessage" />
             <div class="GameBottom__characterWrap">
                 <img
                     class="GameBottom__characterImage"
@@ -44,13 +41,8 @@ const gameStore = useGameStore()
         column-gap: 40px;
     }
 
-    &__cpuMessage {
+    & &__cpuMessage {
         width: 500px;
-        text-align: left;
-        padding: 20px;
-        border: 1px solid #333;
-        border-radius: 5px;
-        background-color: #fff;
     }
 
     &__characterImage {

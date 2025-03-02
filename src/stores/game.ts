@@ -1,7 +1,10 @@
 import { defineStore } from 'pinia'
 import { usePanelStore } from './panel'
 import { checkPanelWords } from '@/logics/shiritori'
-import { getCpuMessageWhenPlayerSelect } from '@/logics/cpuMessage'
+import {
+    getCpuMessageWhenGameStart,
+    getCpuMessageWhenPlayerSelect,
+} from '@/logics/cpuMessage'
 import { nextTick } from 'vue'
 
 // グローバルスコープでタイマーIDを保持
@@ -27,6 +30,7 @@ interface gameStore {
     currentletter: string
     isCpuThinking: boolean
     cpuMessage: string
+    isCpuMessageTyping: boolean
     isDebug: boolean
 }
 
@@ -44,22 +48,30 @@ export const useGameStore = defineStore('game', {
         timeLimit: TIME_LIMIT[1],
         currentletter: 'あ',
         isCpuThinking: false,
-        cpuMessage: 'ああああああああああああ<br>ええええええええええ',
+        cpuMessage: '',
+        isCpuMessageTyping: false,
         isDebug: false,
     }),
     actions: {
-        startGame() {
+        async startGame() {
             const panelStore = usePanelStore() // パネルストアを取得
             panelStore.initPanels() // ここでパネルを初期化
             this.timeLimit = TIME_LIMIT[this.cpuStrong]
             this.isGameStart = true
+
+            // CPUのメッセージをセットし、表示完了を待つ
+            await this.setCpuMessage(getCpuMessageWhenGameStart(this.cpuStrong))
+
             this.startTimer()
         },
 
-        selectPanel(panelId: number, isPlayerClicked: boolean) {
+        async selectPanel(panelId: number, isPlayerClicked: boolean) {
             if (
                 !this.isGameStart ||
-                (isPlayerClicked && this.gameMode === 1 && !this.isPlayerTurn)
+                (isPlayerClicked &&
+                    this.gameMode === 1 &&
+                    !this.isPlayerTurn) ||
+                this.isCpuMessageTyping
             ) {
                 return
             }
@@ -79,9 +91,12 @@ export const useGameStore = defineStore('game', {
             const result = checkPanelWords(this.currentletter, panel.words) //1 or 2 or 3が返るように（1:オッケー、2：間違い、3：「ん」または「ン」が最後に来るものが引っ掛かった）
             console.log('result', result)
 
-            this.cpuMessage = getCpuMessageWhenPlayerSelect(
-                result.matchedWord,
-                result.code,
+            await this.setCpuMessage(
+                getCpuMessageWhenPlayerSelect(
+                    result.matchedWord,
+                    result.code,
+                    this.cpuStrong,
+                ),
             )
 
             if (this.gameMode === 1) {
@@ -119,6 +134,86 @@ export const useGameStore = defineStore('game', {
                 clearInterval(timerId)
                 timerId = null
             }
+        },
+
+        /**
+         * CPUのメッセージをセットし、すべて表示されるまで待つ
+         */
+        setCpuMessage(message: string): Promise<void> {
+            return new Promise((resolve) => {
+                this.cpuMessage = '' // 初期化
+                this.isCpuMessageTyping = true // タイピング中フラグON
+
+                let index = 0
+                const typingSpeed = 50 // 文字の表示速度（ミリ秒）
+
+                // ✅ HTMLかプレーンテキストかを判別
+                const isHtml = /<[^>]+>/.test(message)
+
+                if (isHtml) {
+                    // **HTMLをパースして文字のみを取得**
+                    const parser = new DOMParser()
+                    const doc = parser.parseFromString(message, 'text/html')
+
+                    // **テキストノードのみを取得（HTMLタグを保持）**
+                    const textNodes: Text[] = []
+                    const getTextNodes = (node: Node) => {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            textNodes.push(node as Text)
+                        } else {
+                            node.childNodes.forEach(getTextNodes)
+                        }
+                    }
+                    getTextNodes(doc.body)
+
+                    // **すべてのテキストを連結**
+                    const fullText = textNodes
+                        .map((node) => node.textContent)
+                        .join('')
+                    const textLength = fullText.length
+
+                    // **1文字ずつテキストを表示**
+                    const typeNextCharacter = () => {
+                        if (index < textLength) {
+                            let charCount = 0
+                            textNodes.forEach((node) => {
+                                const originalText = node.textContent || ''
+                                node.textContent = originalText.slice(
+                                    0,
+                                    Math.min(
+                                        originalText.length,
+                                        index - charCount + 1,
+                                    ),
+                                )
+                                charCount += originalText.length
+                            })
+
+                            this.cpuMessage = doc.body.innerHTML // ✅ 更新後のHTMLを反映
+                            index++
+                            setTimeout(typeNextCharacter, typingSpeed)
+                        } else {
+                            this.isCpuMessageTyping = false // ✅ 表示完了
+                            resolve()
+                        }
+                    }
+
+                    typeNextCharacter() // アニメーション開始
+                } else {
+                    // **プレーンテキスト（通常の文字列）**
+                    const typeNextCharacter = () => {
+                        if (index < message.length) {
+                            this.cpuMessage += message[index] // 1文字ずつ追加
+                            index++
+                            setTimeout(typeNextCharacter, typingSpeed)
+                        } else {
+                            this.isCpuMessageTyping = false // ✅ 表示完了
+                            resolve()
+                        }
+                    }
+
+                    typeNextCharacter() // アニメーション開始
+                }
+            })
         },
     },
 
