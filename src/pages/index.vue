@@ -30,6 +30,7 @@ onMounted(() => {
     >
         <SettingStart v-if="!gameStore.isGameStart && !gameStore.isDebug" />
         <Stage v-if="gameStore.isGameStart" />
+        <Debug v-if="gameStore.isDebug" />
     </div>
 </template>
 

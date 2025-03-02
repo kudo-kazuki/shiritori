@@ -1,17 +1,26 @@
 import { defineStore } from 'pinia'
 import { usePanelStore } from './panel'
-import { checkPanelWords } from '@/logics/shiritori'
+import { checkPanelWords, getLastCharHiragana } from '@/logics/shiritori'
 import {
     getCpuMessageWhenGameStart,
     getCpuMessageWhenPlayerSelect,
+    getCpuMessageWhenFirstSelectPanel,
+    getCpuMessageWhenCpuPanelSelectedBefore,
+    getCpuMessageWhenCpuPanelSelected,
+    getCpuMessageWhenPlayerTurnChanged,
 } from '@/logics/cpuMessage'
+import {
+    selectFirstPanelId,
+    decideCpuPanelIdByProbability,
+} from '@/logics/cpuLogic'
+
 import { nextTick } from 'vue'
 
 // グローバルスコープでタイマーIDを保持
 let timerId: ReturnType<typeof setInterval> | null = null
 
 const TIME_LIMIT: Record<number, number> = {
-    1: 40,
+    1: 50,
     2: 30,
     3: 20,
 }
@@ -46,11 +55,11 @@ export const useGameStore = defineStore('game', {
         turn: 1,
         cpuStrong: 1,
         timeLimit: TIME_LIMIT[1],
-        currentletter: 'あ',
+        currentletter: '',
         isCpuThinking: false,
         cpuMessage: '',
         isCpuMessageTyping: false,
-        isDebug: false,
+        isDebug: true,
     }),
     actions: {
         async startGame() {
@@ -59,8 +68,41 @@ export const useGameStore = defineStore('game', {
             this.timeLimit = TIME_LIMIT[this.cpuStrong]
             this.isGameStart = true
 
+            await nextTick()
+
             // CPUのメッセージをセットし、表示完了を待つ
             await this.setCpuMessage(getCpuMessageWhenGameStart(this.cpuStrong))
+            await this.setCpuMessage(
+                getCpuMessageWhenFirstSelectPanel(this.cpuStrong),
+            )
+            await this.setCpuMessage(
+                getCpuMessageWhenCpuPanelSelectedBefore(this.cpuStrong),
+            )
+
+            const firstPanelId = selectFirstPanelId(panelStore.panels)
+            const firstPanel = panelStore.panels.find(
+                (p) => p.id === firstPanelId,
+            )
+
+            if (!firstPanel) {
+                console.log('最初のパネルが選べない。')
+                return
+            }
+            const firstWord = firstPanel?.words[0]
+            this.currentletter = getLastCharHiragana(firstWord)
+
+            await this.setCpuMessage(
+                getCpuMessageWhenCpuPanelSelected(this.cpuStrong, firstWord),
+            )
+
+            firstPanel.isUsed = true
+
+            await this.setCpuMessage(
+                getCpuMessageWhenPlayerTurnChanged(
+                    this.cpuStrong,
+                    this.currentletter,
+                ),
+            )
 
             this.startTimer()
         },
@@ -100,15 +142,48 @@ export const useGameStore = defineStore('game', {
             )
 
             if (this.gameMode === 1) {
-                if (this.isPlayerTurn) {
+                if (result.code === 1) {
+                    if (this.isPlayerTurn) {
+                        this.playerScore++
+                    } else {
+                        this.cpuScore++
+                    }
+                    panel.isUsed = true
+
+                    //TODO:選択できるパネルがないかの判定→ないならゲーム終了
+                } else if (result.code === 2) {
                 } else {
+                    //TODO:「ん」なのでゲーム終了
                 }
+                this.switchTurn()
             } else {
             }
         },
 
         switchTurn() {
             this.isPlayerTurn = !this.isPlayerTurn
+
+            if (!this.isPlayerTurn) {
+                this.runCpuAction()
+            }
+        },
+
+        runCpuAction() {
+            // CPUパネル選択
+            const panelStore = usePanelStore()
+            const chosenId = decideCpuPanelIdByProbability(
+                panelStore.panels,
+                this.currentletter,
+                this.cpuStrong,
+            )
+            if (chosenId !== null) {
+                // CPUが選んだパネルでselectPanel()
+                this.selectPanel(chosenId, false)
+            } else {
+                // 候補が一切無ければnull
+                console.log('CPUはパネルを選べなかった')
+                // 何らかの処理 (ターン終了など)
+            }
         },
 
         startTimer() {
@@ -147,7 +222,7 @@ export const useGameStore = defineStore('game', {
                 let index = 0
                 const typingSpeed = 50 // 文字の表示速度（ミリ秒）
 
-                // ✅ HTMLかプレーンテキストかを判別
+                // HTMLかプレーンテキストかを判別
                 const isHtml = /<[^>]+>/.test(message)
 
                 if (isHtml) {
@@ -188,11 +263,11 @@ export const useGameStore = defineStore('game', {
                                 charCount += originalText.length
                             })
 
-                            this.cpuMessage = doc.body.innerHTML // ✅ 更新後のHTMLを反映
+                            this.cpuMessage = doc.body.innerHTML // 更新後のHTMLを反映
                             index++
                             setTimeout(typeNextCharacter, typingSpeed)
                         } else {
-                            this.isCpuMessageTyping = false // ✅ 表示完了
+                            this.isCpuMessageTyping = false // 表示完了
                             resolve()
                         }
                     }
@@ -206,7 +281,7 @@ export const useGameStore = defineStore('game', {
                             index++
                             setTimeout(typeNextCharacter, typingSpeed)
                         } else {
-                            this.isCpuMessageTyping = false // ✅ 表示完了
+                            this.isCpuMessageTyping = false // 表示完了
                             resolve()
                         }
                     }

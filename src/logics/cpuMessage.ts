@@ -21,6 +21,32 @@ export function getCpuMessageWhenGameStart(cpuStrong: number): string {
     return START_MESSAGE[cpuStrong]
 }
 
+export function getCpuMessageWhenFirstSelectPanel(cpuStrong: number): string {
+    return START_PANEL_SELECT_BEFORE_MESSAGE[cpuStrong]
+}
+
+export function getCpuMessageWhenCpuPanelSelectedBefore(
+    cpuStrong: number,
+): string {
+    return CPU_PANEL_SELECTED_BEFORE[cpuStrong]
+}
+
+export function getCpuMessageWhenCpuPanelSelected(
+    cpuStrong: number,
+    word: string,
+): string {
+    let template = CPU_PANEL_SELECTED[cpuStrong]
+    return template.replace('{{word}}', word)
+}
+
+export function getCpuMessageWhenPlayerTurnChanged(
+    cpuStrong: number,
+    word: string,
+): string {
+    let template = PLAYER_TURN_CHANGED[cpuStrong]
+    return template.replace('{{word}}', word)
+}
+
 export function getCpuMessageWhenPlayerSelect(
     selectedWord: string, // プレイヤーが選んだ単語
     resultCode: number, // checkPanelWordsの結果: 1=OK,2=不正,3=ん終わり

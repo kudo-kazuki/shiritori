@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     Bottom: typeof import('./components/Game/Bottom.vue')['default']
     CpuMessage: typeof import('./components/Game/CpuMessage.vue')['default']
+    Debug: typeof import('./components/Game/Debug.vue')['default']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     Main: typeof import('./components/Game/Main.vue')['default']
     Panel: typeof import('./components/Game/Panel.vue')['default']

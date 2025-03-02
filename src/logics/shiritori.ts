@@ -7,7 +7,7 @@ interface CheckResult {
     // code=2 or 3の場合は空文字でもOK
 }
 
-function toHiragana(str: string): string {
+export function toHiragana(str: string): string {
     return str.replace(/[ァ-ヶ]/g, (s) => {
         return String.fromCharCode(s.charCodeAt(0) - 0x60)
     })
@@ -57,7 +57,7 @@ export function checkPanelWords(
     return { code: 2, nextLetter: '', matchedWord: '' }
 }
 
-function getLastCharHiragana(word: string): string {
+export function getLastCharHiragana(word: string): string {
     let last = word[word.length - 1]
     if (last === 'ー' && word.length >= 2) {
         last = word[word.length - 2]
