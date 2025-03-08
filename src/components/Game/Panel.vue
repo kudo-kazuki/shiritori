@@ -26,6 +26,7 @@ const onClick = () => {
     >
         <img v-if="!isUsed" :src="imgPath" alt="" />
         <span v-if="gameStore.isDebug" class="GamePanel__debugWords">
+            {{ id }}<br />
             <span v-for="word in words" class="GamePanel__debugWord"
                 >{{ word }},</span
             >
@@ -53,6 +54,8 @@ const onClick = () => {
         background-color: rgba(0, 0, 0, 0.55);
         line-height: 1;
         padding-bottom: 3px;
+        color: #fff;
+        font-size: 10px;
     }
 
     &__debugWord {

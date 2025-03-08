@@ -16,7 +16,14 @@ const gameStore = useGameStore()
                 />
             </div>
             <CpuMessage class="GameBottom__cpuMessage" />
-            <div class="GameBottom__characterWrap">
+            <div
+                v-if="gameStore.isCpuDisplay"
+                class="GameBottom__characterWrap"
+                :class="{
+                    'GameBottom__characterWrap--blinking':
+                        gameStore.isCpuBlinking,
+                }"
+            >
                 <img
                     class="GameBottom__characterImage"
                     :src="`/src/assets/images/cpu/${gameStore.cpuStrong}.png`"
@@ -45,8 +52,50 @@ const gameStore = useGameStore()
         width: 500px;
     }
 
+    &__characterWrap {
+        &--blinking {
+            animation: blinkAnimation 0.08s steps(2, start) infinite;
+        }
+    }
+
     &__characterImage {
         height: 150px;
+    }
+
+    @media screen and (max-width: 1224px) {
+        &__characterStage {
+            column-gap: var.vw(40);
+        }
+
+        & &__cpuMessage {
+            width: var.vw(500);
+        }
+
+        &__characterImage {
+            height: var.vw(150);
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        & &__cpuMessage {
+            width: 200px;
+        }
+
+        &__characterImage {
+            height: 60px;
+        }
+    }
+}
+
+@keyframes blinkAnimation {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
     }
 }
 </style>

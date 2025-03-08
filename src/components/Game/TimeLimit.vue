@@ -7,7 +7,7 @@ const props = withDefaults(defineProps<Props>(), {})
 
 <template>
     <time class="GameTimeLimit">
-        {{ time }}
+        {{ time < 0 ? 0 : time }}
     </time>
 </template>
 
@@ -25,5 +25,14 @@ const props = withDefaults(defineProps<Props>(), {})
         0-1px 0 #fff,
         -1px 0 0 #fff,
         1px 0 0 #fff;
+
+    @media screen and (max-width: 1224px) {
+        font-size: var.vw(32);
+    }
+
+    @media screen and (max-width: 600px) {
+        font-size: 24px;
+        line-height: 1;
+    }
 }
 </style>

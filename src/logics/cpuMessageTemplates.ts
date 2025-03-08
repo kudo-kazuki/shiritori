@@ -11,9 +11,9 @@ export const START_PANEL_SELECT_BEFORE_MESSAGE: Record<number, string> = {
 }
 
 export const PLAYER_TURN_CHANGED: Record<number, string> = {
-    1: `『{{word}}』で始まるやつは何でしょう…？`,
-    2: `『{{word}}』で始まるやつは？`,
-    3: `『{{word}}』で始まるやつは何だ？`,
+    1: `あなたの番です。\n『{{word}}』で始まるやつは何でしょう…？`,
+    2: `あなたの番よ。\n『{{word}}』で始まるやつは？`,
+    3: `お前の番だな。\n『{{word}}』で始まるやつは何だ？`,
 }
 
 export const CORRECT_PLAYER_EASY: Record<number, string> = {
@@ -47,9 +47,15 @@ export const CPU_PANEL_SELECTED: Record<number, string> = {
 }
 
 export const WRONG_PLAYER: Record<number, string> = {
-    1: `あれ？それは間違いですね。すみません。`,
+    1: `あれ？残念ですがそれは間違いですね。`,
     2: `あーら残念。それは間違いよ。`,
     3: `ははっ！そいつは間違いだな！`,
+}
+
+export const CORRECT_CPU: Record<number, string> = {
+    1: `よし、正解ですね。`,
+    2: `よし、正解ね！`,
+    3: `よし、正解だな！`,
 }
 
 export const WRONG_CPU: Record<number, string> = {
@@ -71,9 +77,9 @@ export const N_END_CPU: Record<number, string> = {
 }
 
 export const ALL_PANEL_SELECTED: Record<number, string> = {
-    1: `選べるパネルがなくなりましたね…<br>ということは…`,
-    2: `あら？選べるパネルがなくなっちゃったわね…<br>ってことは…`,
-    3: `お！選べるパネルがなくなっちゃったな！<br>つまり…`,
+    1: `選べるパネルがなくなりましたね…\nということは…`,
+    2: `あら？選べるパネルがなくなっちゃったわね…\nってことは…`,
+    3: `お！選べるパネルがなくなっちゃったな！\nつまり…`,
 }
 
 export const WIN_PLAYER: Record<number, string> = {
@@ -86,4 +92,16 @@ export const LOSE_PLAYER: Record<number, string> = {
     1: `僕の勝ちですね…。運が良かったです…。`,
     2: `私の勝ちね！出直して来な！`,
     3: `俺の勝ちだな！出直して来るんだな！！`,
+}
+
+export const DRAW: Record<number, string> = {
+    1: `引き分けですね…。`,
+    2: `引き分けね！`,
+    3: `引き分けだな！`,
+}
+
+export const TIME_OVER: Record<number, string> = {
+    1: `残念、時間切れですね…。`,
+    2: `残念！時間切れね！`,
+    3: `残念！時間切れだな！`,
 }

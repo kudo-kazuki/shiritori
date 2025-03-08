@@ -17,7 +17,7 @@ const preloadImages = (paths: string[]) => {
 }
 
 onMounted(() => {
-    gameStore.startGame()
+    // gameStore.startGame()
 })
 </script>
 
@@ -28,7 +28,7 @@ onMounted(() => {
         :data-device="deviceType"
         :data-windowWidth="windowWidth"
     >
-        <SettingStart v-if="!gameStore.isGameStart && !gameStore.isDebug" />
+        <SettingStart v-if="!gameStore.isGameStart" />
         <Stage v-if="gameStore.isGameStart" />
         <Debug v-if="gameStore.isDebug" />
     </div>

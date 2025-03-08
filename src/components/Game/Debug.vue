@@ -16,6 +16,9 @@ const gameStore = useGameStore()
                 <em>gameMode:</em><span>{{ gameStore.gameMode }}</span>
             </li>
             <li>
+                <em>isSleep:</em><span>{{ gameStore.isSleep }}</span>
+            </li>
+            <li>
                 <em>isPlayerTurn:</em><span>{{ gameStore.isPlayerTurn }}</span>
             </li>
             <li>
@@ -41,11 +44,12 @@ const gameStore = useGameStore()
                 ><span>{{ gameStore.currentletter }}</span>
             </li>
             <li>
-                <em>isCpuThinking:</em
-                ><span>{{ gameStore.isCpuThinking }}</span>
+                <em>currentCpuHoverPanelId:</em
+                ><span>{{ gameStore.currentCpuHoverPanelId }}</span>
             </li>
             <li>
-                <em>cpuMessage:</em><span>{{ gameStore.cpuMessage }}</span>
+                <em>isCpuThinking:</em
+                ><span>{{ gameStore.isCpuThinking }}</span>
             </li>
             <li>
                 <em>isCpuMessageTyping:</em
@@ -70,6 +74,10 @@ const gameStore = useGameStore()
     background-color: #fff;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 
+    * {
+        user-select: text;
+    }
+
     li + li {
         margin-top: 4px;
     }
@@ -78,6 +86,10 @@ const gameStore = useGameStore()
         font-weight: bold;
         font-style: inherit;
         padding-right: 8px;
+    }
+
+    @media screen and (max-width: 740px) {
+        display: none;
     }
 }
 </style>

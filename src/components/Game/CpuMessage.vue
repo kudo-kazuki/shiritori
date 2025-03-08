@@ -5,7 +5,7 @@ const gameStore = useGameStore()
 </script>
 
 <template>
-    <div class="GameCpuMessage" v-html="gameStore.cpuMessage"></div>
+    <pre class="GameCpuMessage" v-html="gameStore.cpuMessage"></pre>
 </template>
 
 <style lang="scss" scoped>
@@ -15,5 +15,15 @@ const gameStore = useGameStore()
     border: 1px solid #333;
     border-radius: 5px;
     background-color: #fff;
+
+    @media screen and (max-width: 1224px) {
+        padding: var.vw(20);
+        font-size: var.vw(18);
+    }
+
+    @media screen and (max-width: 600px) {
+        font-size: 10px;
+        line-height: 1.6;
+    }
 }
 </style>

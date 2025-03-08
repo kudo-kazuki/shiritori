@@ -39,5 +39,10 @@ export const usePanelStore = defineStore('panel', {
         availablePanels: (state) => {
             return state.panels.filter((p) => !p.isUsed)
         },
+
+        hasAvailablePanel: (state) => {
+            // 単純に isUsed === false のパネルが1つでもあればtrue
+            return state.panels.some((p) => !p.isUsed)
+        },
     },
 })

@@ -1,4 +1,4 @@
-// logic/shiritori.ts
+import type { Panel } from '@/types/types'
 
 interface CheckResult {
     code: 1 | 2 | 3 // 1=OK, 2=不正解, 3=末尾"ん"
@@ -67,4 +67,30 @@ export function getLastCharHiragana(word: string): string {
     }
     last = toHiragana(last)
     return last
+}
+
+/**
+ * 「currentLetter の頭文字に合う、未使用 (isUsed===false) のパネルがあるか」を判定する。
+ * - ここでは末尾が「ん」のパネルかどうかは問わず、単に「合致する単語があるか」だけ見る。
+ * @param panels パネル一覧
+ * @param currentLetter 現在のお題文字 (例: "あ")
+ * @returns 存在すれば true / なければ false
+ */
+export function existsAvailablePanel(
+    panels: Panel[],
+    currentLetter: string,
+): boolean {
+    // ひらがなに正規化
+    const letterNormalized = toHiragana(currentLetter)
+
+    // 未使用かつ、words のいずれかが頭文字一致ならOK
+    return panels.some((panel) => {
+        if (panel.isUsed) return false
+
+        return panel.words.some((word) => {
+            // カタカナ→ひらがなに変換し、先頭文字をチェック
+            const firstChar = toHiragana(word)[0] ?? ''
+            return firstChar === letterNormalized
+        })
+    })
 }
