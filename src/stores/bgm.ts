@@ -32,7 +32,11 @@ export const useBgmStore = defineStore('bgm', {
         preloadBGM(name: string) {
             if (this.loadedBgm[name]) return // すでにロード済みならスキップ
 
-            const audio = new Audio(`/src/assets/bgm/${name}.mp3`)
+            const audioPath = new URL(
+                `../assets/bgm/${name}.mp3`,
+                import.meta.url,
+            ).href
+            const audio = new Audio(audioPath)
             audio.preload = 'auto' // **自動でロード**
             audio.volume = 0.5 // デフォルトの音量
 
@@ -54,9 +58,12 @@ export const useBgmStore = defineStore('bgm', {
             }
 
             this.isFirstLoop = true // 1周目のフラグをセット
-            this.bgm =
-                this.loadedBgm[name] || new Audio(`/src/assets/bgm/${name}.mp3`)
 
+            const audioPath = new URL(
+                `../assets/bgm/${name}.mp3`,
+                import.meta.url,
+            ).href
+            this.bgm = this.loadedBgm[name] || new Audio(audioPath)
             this.bgm.volume = 0.5
             this.bgm.currentTime = 0 // **1周目は0秒から再生**
             this.bgm.play()

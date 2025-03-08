@@ -2,7 +2,10 @@
 interface Props {
     time: number
 }
-const props = withDefaults(defineProps<Props>(), {})
+const props = withDefaults(defineProps<Props>(), {
+    time: 0, // デフォルト値
+})
+console.log(props.time)
 </script>
 
 <template>

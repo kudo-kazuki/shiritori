@@ -17,7 +17,11 @@ export const useSeStore = defineStore('se', {
         preloadSE(name: string) {
             if (this.loadedSe[name]) return // すでにロード済みならスキップ
 
-            const audio = new Audio(`/src/assets/se/${name}.mp3`)
+            const audioPath = new URL(
+                `../assets/se/${name}.mp3`,
+                import.meta.url,
+            ).href
+            const audio = new Audio(audioPath)
             audio.preload = 'auto' // **事前ロード**
             this.loadedSe[name] = audio
 
@@ -31,8 +35,11 @@ export const useSeStore = defineStore('se', {
          * @param volume 音量（デフォルト 1.0）
          */
         playSE(name: string, volume = 1.0) {
-            const se =
-                this.loadedSe[name] || new Audio(`/src/assets/se/${name}.mp3`)
+            const audioPath = new URL(
+                `../assets/se/${name}.mp3`,
+                import.meta.url,
+            ).href
+            const se = this.loadedSe[name] || new Audio(audioPath)
             se.volume = volume
             se.currentTime = 0 // **常に最初から再生**
             se.play()

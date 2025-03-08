@@ -10,7 +10,10 @@ interface Props extends Panel {}
 const props = withDefaults(defineProps<Props>(), {})
 
 const imgPath = computed(() => {
-    return `/src/assets/images/panels/${props.id}.png`
+    return new URL(
+        `../../assets/images/panels/${props.id}.png`,
+        import.meta.url,
+    ).href
 })
 
 const onClick = () => {

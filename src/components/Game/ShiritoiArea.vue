@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useGameStore } from '@/stores/game'
 import { usePanelStore } from '@/stores/panel'
+import cpuCursor from '@/assets/images/cpu_cursor.png'
 
 const panelStore = usePanelStore()
 const gameStore = useGameStore()
@@ -27,7 +28,7 @@ onMounted(async () => {
     setTimeout(() => {
         adjustPanelSize()
         isAdjustCompleted.value = true
-    }, 1)
+    }, 50)
 
     window.addEventListener('resize', adjustPanelSize) // ウィンドウサイズ変更時も更新
 })
@@ -36,40 +37,91 @@ onMounted(async () => {
 onBeforeUnmount(() => {
     window.removeEventListener('resize', adjustPanelSize)
 })
+
+const cpuCursorPos = ref<{
+    top: string | number
+    left: string | number
+}>({ top: '-100%', left: 0 }) // CPUカーソルの位置
+
+// currentCpuHoverPanelId が変わったら位置を計算
+watch(
+    () => gameStore.currentCpuHoverPanelId,
+    async (newId) => {
+        if (newId === null) return
+
+        // パネルの更新後に座標を取得するため nextTick を使用
+        await nextTick()
+
+        const targetPanel = panelRef.value.find((el) => {
+            const panelId = panelStore.panels.find(
+                (panel) => panel.id === newId,
+            )
+            return panelId && el.dataset.id === String(panelId.id)
+        })
+
+        if (targetPanel) {
+            const rect = targetPanel.getBoundingClientRect()
+            const parentRect = targetPanel
+                .closest('.GameShiritoiArea')
+                ?.getBoundingClientRect()
+
+            if (parentRect) {
+                cpuCursorPos.value.top = rect.top - parentRect.top
+                cpuCursorPos.value.left = rect.left - parentRect.left
+            }
+        }
+    },
+)
 </script>
 
 <template>
-    <ul
+    <div
         class="GameShiritoiArea"
         :class="{ 'GameShiritoiArea--adjustCompleted': isAdjustCompleted }"
     >
-        <li
-            v-for="panel in panelStore.panels"
-            :key="panel.id"
-            class="GameShiritoiArea__panel"
-            ref="panelRef"
-        >
-            <Panel v-bind="panel" />
-        </li>
-    </ul>
+        <ul class="GameShiritoiArea__panels">
+            <li
+                v-for="panel in panelStore.panels"
+                :key="panel.id"
+                class="GameShiritoiArea__panel"
+                :data-id="panel.id"
+                ref="panelRef"
+            >
+                <Panel v-bind="panel" />
+            </li>
+        </ul>
+
+        <img
+            class="GameShiritoiArea__cpuCursor"
+            :src="cpuCursor"
+            :style="{
+                top: `${cpuCursorPos.top}px`,
+                left: `${cpuCursorPos.left}px`,
+            }"
+            alt=""
+        />
+    </div>
 </template>
 
 <style lang="scss" scoped>
 .GameShiritoiArea {
-    width: 100%;
-    height: 100%;
-    background: url(/src/assets/images/board.png) no-repeat center top;
-    background-size: cover;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 4px;
-    opacity: 0;
-    transition: 0.2s ease opacity;
+    position: relative;
 
     &--adjustCompleted {
         opacity: 1;
+    }
+
+    &__panels {
+        width: 100%;
+        height: 100%;
+        background: url(/src/assets/images/board.png) no-repeat center top;
+        background-size: cover;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 4px;
+        transition: 0.2s ease opacity;
     }
 
     &__panel {
@@ -84,8 +136,21 @@ onBeforeUnmount(() => {
         border: 2px solid orange;
     }
 
+    &__cpuCursor {
+        position: absolute;
+        top: -100%;
+        left: -100%;
+        height: 50px;
+        filter: drop-shadow(2px 2px 3px #000);
+        transition:
+            top 0.3s ease,
+            left 0.3s ease;
+    }
+
     @media screen and (max-width: 1224px) {
-        padding: 0 var.vw(4);
+        &__panels {
+            padding: 0 var.vw(4);
+        }
 
         &__panel {
             width: calc((100% / 9) - var.vw(8));

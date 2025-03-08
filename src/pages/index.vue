@@ -9,13 +9,6 @@ const gameStore = useGameStore()
 const { windowHeight } = useWindowHeight()
 const { windowWidth, deviceType } = useWindowWidthAndDevice()
 
-const preloadImages = (paths: string[]) => {
-    paths.forEach((path) => {
-        const img = new Image()
-        img.src = path
-    })
-}
-
 onMounted(() => {
     // gameStore.startGame()
 })

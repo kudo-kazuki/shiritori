@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { usePanelStore } from './panel'
 import { useBgmStore } from '@/stores/bgm'
 import { useSeStore } from '@/stores/se'
-import { sleepWithState, sleep } from '@/utils/sleep'
+import { sleepWithState } from '@/utils/sleep'
 import {
     checkPanelWords,
     getLastCharHiragana,
@@ -17,7 +17,6 @@ import {
     getCpuMessageWhenPlayerTurnChanged,
     getCpuMessageWhenTimeOver,
     getCpuMessageWhenCpuTurnChanged,
-    getCpuMessageWhenCpuSelectAfter,
     getCpuMessageWhenCpuPanelSelectedWrong,
     getCpuMessageWhenCpuPanelSelectedNEnd,
     getCpuMessageWhenAllPanelSelected,
@@ -32,7 +31,7 @@ import {
 import { nextTick } from 'vue'
 
 const TIME_LIMIT: Record<number, number> = {
-    1: 20,
+    1: 50,
     2: 30,
     3: 20,
 }
@@ -83,7 +82,7 @@ export const useGameStore = defineStore('game', {
         isCpuMessageTyping: false,
         isCpuBlinking: false,
         isCpuDisplay: true,
-        isDebug: true,
+        isDebug: false,
     }),
     actions: {
         async startGame() {
@@ -357,7 +356,7 @@ export const useGameStore = defineStore('game', {
             return false
         },
 
-        runCpuAction() {
+        async runCpuAction() {
             // CPUパネル選択
             const panelStore = usePanelStore()
             const chosenId = decideCpuPanelIdByProbability(
@@ -369,6 +368,8 @@ export const useGameStore = defineStore('game', {
             this.currentCpuHoverPanelId = chosenId
 
             console.log('runCpuAction CPUパネル選択:', chosenId)
+
+            await sleepWithState(this, 'isSleep', 600)
 
             if (chosenId !== null) {
                 // CPUが選んだパネルでselectPanel()

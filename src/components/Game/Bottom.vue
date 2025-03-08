@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import playerImage from '@/assets/images/player.png'
 import { useGameStore } from '@/stores/game'
 const gameStore = useGameStore()
+
+const cpuImagePath = computed(() => {
+    return new URL(
+        `../../assets/images/cpu/${gameStore.cpuStrong}.png`,
+        import.meta.url,
+    ).href
+})
 </script>
 
 <template>
@@ -26,7 +34,7 @@ const gameStore = useGameStore()
             >
                 <img
                     class="GameBottom__characterImage"
-                    :src="`/src/assets/images/cpu/${gameStore.cpuStrong}.png`"
+                    :src="cpuImagePath"
                     alt=""
                 />
             </div>
