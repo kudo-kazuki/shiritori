@@ -94,6 +94,8 @@ export const useGameStore = defineStore('game', {
             this.isGameStart = true
 
             const seStore = useSeStore()
+
+            await sleepWithState(this, 'isSleep', 300)
             seStore.playSE('start', 0.5)
 
             await sleepWithState(this, 'isSleep', 1000)

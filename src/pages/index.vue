@@ -21,6 +21,7 @@ onMounted(() => {
         :data-device="deviceType"
         :data-windowWidth="windowWidth"
     >
+        <PreLoad />
         <SettingStart v-if="!gameStore.isGameStart" />
         <Stage v-if="gameStore.isGameStart" />
         <Debug v-if="gameStore.isDebug" />

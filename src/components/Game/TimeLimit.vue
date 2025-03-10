@@ -9,7 +9,7 @@ console.log(props.time)
 </script>
 
 <template>
-    <time class="GameTimeLimit">
+    <time class="GameTimeLimit" :class="{ 'GameTimeLimit--danger': time < 10 }">
         {{ time < 0 ? 0 : time }}
     </time>
 </template>
@@ -28,6 +28,10 @@ console.log(props.time)
         0-1px 0 #fff,
         -1px 0 0 #fff,
         1px 0 0 #fff;
+
+    &--danger {
+        color: red;
+    }
 
     @media screen and (max-width: 1224px) {
         font-size: var.vw(32);

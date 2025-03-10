@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useSeStore } from '@/stores/se'
 
 interface BgmState {
     bgm: HTMLAudioElement | null
@@ -87,6 +88,12 @@ export const useBgmStore = defineStore('bgm', {
                 this.bgm.currentTime = 0
                 this.bgm = null
                 this.isFirstLoop = true
+
+                // **iOS で SE を確実に鳴らすため、AudioContext をリセットしない**
+                setTimeout(() => {
+                    const seStore = useSeStore()
+                    seStore.initializeAudioContext()
+                }, 10)
             }
         },
     },

@@ -13,6 +13,7 @@ declare module 'vue' {
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     Main: typeof import('./components/Game/Main.vue')['default']
     Panel: typeof import('./components/Game/Panel.vue')['default']
+    PreLoad: typeof import('./components/PreLoad.vue')['default']
     Radio: typeof import('./components/Radio.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
