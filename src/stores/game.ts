@@ -54,6 +54,8 @@ interface gameStore {
     isCpuThinking: boolean
     cpuMessage: string
     currentCpuHoverPanelId: number | null
+    currentSelectedPanelId: number | null
+    currentSelectedPanelResult: number | null
     isCpuMessageTyping: boolean
     isCpuBlinking: boolean
     isCpuDisplay: boolean
@@ -79,6 +81,9 @@ export const useGameStore = defineStore('game', {
         isCpuThinking: false,
         cpuMessage: '',
         currentCpuHoverPanelId: null,
+        currentSelectedPanelId:
+            null /**プレイヤー、CPU関わらず選択されたパネルのid */,
+        currentSelectedPanelResult: null,
         isCpuMessageTyping: false,
         isCpuBlinking: false,
         isCpuDisplay: true,
@@ -181,6 +186,9 @@ export const useGameStore = defineStore('game', {
             const result = checkPanelWords(this.currentletter, panel.words) //1 or 2 or 3が返るように（1:オッケー、2：間違い、3：「ん」または「ン」が最後に来るものが引っ掛かった）
             console.log('result', result)
             console.log('-----------------')
+
+            this.currentSelectedPanelId = panelId
+            this.currentSelectedPanelResult = result.code
 
             const seStore = useSeStore()
 

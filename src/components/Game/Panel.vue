@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { useGameStore } from '@/stores/game'
 import type { Panel } from '@/types/types'
 
@@ -19,12 +19,36 @@ const imgPath = computed(() => {
 const onClick = () => {
     gameStore.selectPanel(props.id, true)
 }
+
+const isCurrentCorrect = ref(false)
+const isCurrentWrong = ref(false)
+watch(
+    () => gameStore.currentSelectedPanelId,
+    (newVal) => {
+        if (newVal === props.id) {
+            if (gameStore.currentSelectedPanelResult === 1) {
+                isCurrentCorrect.value = true
+            } else {
+                isCurrentWrong.value = true
+            }
+
+            setTimeout(() => {
+                isCurrentCorrect.value = false
+                isCurrentWrong.value = false
+            }, 1000)
+        }
+    },
+)
 </script>
 
 <template>
     <button
         class="GamePanel"
-        :class="{ 'GamePanel--used': isUsed }"
+        :class="{
+            'GamePanel--used': isUsed,
+            'GamePanel--currentCorrect animate__heartBeat': isCurrentCorrect,
+            'GamePanel--currentWrong animate__shakeX': isCurrentWrong,
+        }"
         @click="onClick"
     >
         <img v-if="!isUsed" :src="imgPath" alt="" />
@@ -43,10 +67,19 @@ const onClick = () => {
     width: 100%;
     height: 100%;
     background-color: #fff;
+    border-radius: 8px;
 
     &--used {
         background-color: #ccc;
         cursor: default;
+    }
+
+    &--currentCorrect {
+        animation-duration: 1s;
+    }
+
+    &--currentWrong {
+        animation-duration: 0.8s;
     }
 
     &__debugWords {

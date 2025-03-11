@@ -126,8 +126,7 @@ watch(
 
     &__panel {
         width: calc((100% / 9) - 4px);
-        background-color: rgba(255, 255, 255, 0.2); /* 仮の背景色（確認用） */
-        border: 1px solid rgba(255, 255, 255, 0.5); /* 視認性向上 */
+        background-color: rgba(255, 255, 255, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -160,6 +159,10 @@ watch(
     @media screen and (max-width: 600px) {
         &__panel {
             width: calc((100% / 6) - var.vw(8));
+        }
+
+        &__cpuCursor {
+            height: 30px;
         }
     }
 }

@@ -16,7 +16,13 @@ const cpuImagePath = computed(() => {
     <div class="GameBottom">
         <TimeLimit :time="gameStore.timeLimit" />
         <div class="GameBottom__characterStage">
-            <div class="GameBottom__characterWrap">
+            <div
+                class="GameBottom__characterWrap"
+                :class="{
+                    'GameBottom__characterWrap--start animate__slideInLeft':
+                        gameStore.isGameStart,
+                }"
+            >
                 <img
                     class="GameBottom__characterImage"
                     :src="playerImage"
@@ -30,6 +36,8 @@ const cpuImagePath = computed(() => {
                 :class="{
                     'GameBottom__characterWrap--blinking':
                         gameStore.isCpuBlinking,
+                    'GameBottom__characterWrap--start animate__bounceInRight':
+                        gameStore.isGameStart && !gameStore.isCpuBlinking,
                 }"
             >
                 <img
@@ -46,7 +54,6 @@ const cpuImagePath = computed(() => {
 .GameBottom {
     display: flex;
     flex-direction: column;
-
     row-gap: 20px;
     text-align: center;
 
@@ -63,6 +70,10 @@ const cpuImagePath = computed(() => {
     &__characterWrap {
         &--blinking {
             animation: blinkAnimation 0.08s steps(2, start) infinite;
+        }
+
+        &--start {
+            animation-duration: 1s;
         }
     }
 

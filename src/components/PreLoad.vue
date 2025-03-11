@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useSeStore } from '@/stores/se'
 import { useBgmStore } from '@/stores/bgm'
+import player from '@/assets/images/player.png'
 
 const seStore = useSeStore()
 const bgmStore = useBgmStore()
@@ -46,12 +47,13 @@ const panelFiles = import.meta.glob('/src/assets/images/panels/*', {
 const panelFilePaths = ref(
     Object.values(panelFiles).map((mod: any) => mod.default), // ファイルの URL を取得
 )
-
-onMounted(() => {})
 </script>
 
 <template>
     <ul class="PreLoad">
+        <li>
+            <img :src="player" alt="" />
+        </li>
         <li v-for="(filePath, index) in cpuFilePaths" :key="index">
             <img :src="filePath" alt="" />
         </li>
