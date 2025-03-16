@@ -5,7 +5,7 @@ import { toHiragana } from './shiritori' // ひらがな変換する関数
 // CPUごとの確率テーブル
 // 例: 1 => [正解率, 間違い率, ん率]
 const CPU_PROBS: Record<number, [number, number, number]> = {
-    1: [50, 40, 10],
+    1: [40, 50, 10],
     2: [65, 30, 5],
     3: [80, 19, 1],
 }
@@ -47,7 +47,13 @@ export function decideCpuPanelIdByProbability(
     // など好きな処理を書ける。
 
     // 5) カテゴリを抽選
-    const chosenCategory = pickCategory(probCorrect, probWrong, probN)
+    const chosenCategory = pickCategory(
+        probCorrect,
+        probWrong,
+        probN,
+        correctSet.length > 0,
+        nSet.length > 0,
+    )
 
     // 6) カテゴリが空ならフォールバック
     let chosenSet: Panel[] = []
@@ -96,47 +102,52 @@ function splitPanelsByCategories(panels: Panel[], currentLetter: string) {
     const wrongSet: Panel[] = []
 
     for (const panel of panels) {
-        // そのパネルのwordsの中に
-        //   - 頭文字が letterNormalized と一致する単語があるか？
-        //   - 末尾が「ん/ン」の単語があるか？
-        let hasMatch = false
-        let hasNEnding = false
+        let hasValidMatch = false
+        let hasValidNEnding = false
 
         for (const w of panel.words) {
-            // カタカナ→ひらがな
+            // カタカナ→ひらがな変換
             const normalizedWord = toHiragana(w)
 
-            // 頭文字が一致？
+            // currentLetter で始まるワードのみ考慮
             if (
-                normalizedWord[0] === letterNormalized &&
-                letterNormalized !== ''
+                !normalizedWord.startsWith(letterNormalized) ||
+                letterNormalized === ''
             ) {
-                hasMatch = true
+                continue // 関係ない単語は無視
             }
-            // 末尾がん/ン？
-            const last = w[w.length - 1]
-            if (last === 'ん' || last === 'ン') {
-                hasNEnding = true
+
+            hasValidMatch = true // ここまで来たら valid な単語
+
+            // 末尾が「ん/ン」か？
+            const last = normalizedWord.slice(-1)
+            if (last === 'ん') {
+                hasValidNEnding = true
             }
         }
 
-        // 分類
-        if (!hasMatch && letterNormalized !== '') {
-            // 頭文字マッチが無い → 間違い
+        // 振り分け処理
+        if (!hasValidMatch) {
             wrongSet.push(panel)
-        } else if (hasMatch && hasNEnding) {
-            // 末尾がん/ンの単語でマッチ → 'ん'カテゴリ
-            nSet.push(panel)
-        } else if (hasMatch) {
-            // 正解カテゴリ (マッチはあるが ん/ン は無し)
-            correctSet.push(panel)
+        } else if (hasValidNEnding) {
+            nSet.push(panel) // 「ん」パネルに入れる
         } else {
-            // currentLetter が空 もしくは letterNormalized === ''
-            //  => 全部間違い扱いにしてもいいし、
-            //     "正解"の概念がないので wrongSet に入れる
-            wrongSet.push(panel)
+            correctSet.push(panel) // 末尾「ん」なしのパネルのみ正解セットに入れる
         }
     }
+
+    console.log(
+        '正解パネル:',
+        correctSet.map((p) => p.words),
+    )
+    console.log(
+        '「ん」パネル:',
+        nSet.map((p) => p.words),
+    )
+    console.log(
+        '間違いパネル:',
+        wrongSet.map((p) => p.words),
+    )
 
     return { correctSet, nSet, wrongSet }
 }
@@ -149,10 +160,26 @@ function pickCategory(
     probCorrect: number,
     probWrong: number,
     probN: number,
+    correctExists: boolean,
+    nExists: boolean,
 ): 'correct' | 'wrong' | 'n' {
-    const sum = probCorrect + probWrong + probN
-    if (sum <= 0) return 'wrong' // ありえないが対策
+    // 「ん」のパネルがないなら、その確率を間違いカテゴリに足す
+    if (!nExists) {
+        probWrong += probN
+        probN = 0
+    }
 
+    // 正解パネルがない場合、正解率を間違いに回す
+    if (!correctExists) {
+        probWrong += probCorrect
+        probCorrect = 0
+    }
+
+    // 確率の合計を計算
+    const sum = probCorrect + probWrong + probN
+    if (sum <= 0) return 'wrong' // 万が一の対策
+
+    // ランダム値でカテゴリを選択
     const r = Math.random() * sum
     if (r < probCorrect) {
         return 'correct'

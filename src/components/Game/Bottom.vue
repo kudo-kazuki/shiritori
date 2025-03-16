@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import playerImage from '@/assets/images/player.png'
+import fireImage from '@/assets/images/fire.gif'
 import { useGameStore } from '@/stores/game'
 const gameStore = useGameStore()
 
@@ -27,8 +28,15 @@ const cpuImagePath = computed(() => {
                 }"
             >
                 <img
+                    v-if="gameStore.gameResult !== 'lose'"
                     class="GameBottom__characterImage"
                     :src="playerImage"
+                    alt=""
+                />
+                <img
+                    v-if="gameStore.gameResult === 'lose'"
+                    class="GameBottom__characterImage GameBottom__characterImage--fire"
+                    :src="fireImage"
                     alt=""
                 />
             </div>
@@ -71,6 +79,8 @@ const cpuImagePath = computed(() => {
     }
 
     &__characterWrap {
+        position: relative;
+
         &--blinking {
             animation: blinkAnimation 0.08s steps(2, start) infinite;
         }
@@ -82,6 +92,15 @@ const cpuImagePath = computed(() => {
 
     &__characterImage {
         height: 150px;
+
+        &--fire {
+            /*
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            */
+        }
     }
 
     @media screen and (max-width: 1224px) {
