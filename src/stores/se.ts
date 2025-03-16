@@ -79,7 +79,7 @@ export const useSeStore = defineStore('se', {
                 gainNode.connect(this.context.destination)
 
                 source.start(0) // **即座に再生**
-                console.log(`SE ${name} 再生`)
+                // console.log(`SE ${name} 再生`)
             } catch (error) {
                 console.error(`SE ${name} の再生エラー:`, error)
             }

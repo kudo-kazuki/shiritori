@@ -21,8 +21,11 @@ import {
 import { DIFFICULT_WORDS } from '@/data/panelData'
 
 /**ゲーム開始時 */
-export function getCpuMessageWhenGameStart(cpuStrong: number): string {
-    return START_MESSAGE[cpuStrong]
+export function getCpuMessageWhenGameStart(
+    cpuStrong: number,
+    gameMode: number = 1,
+): string {
+    return `${gameMode === 2 ? '早押し' : ''}${START_MESSAGE[cpuStrong]}`
 }
 
 /**最初のパネルを選ぶ前 */
@@ -71,8 +74,13 @@ export function getCpuMessageWhenAllPanelSelected(cpuStrong: number): string {
 export function getCpuMessageWhenPlayerTurnChanged(
     cpuStrong: number,
     word: string,
+    gameMode: number = 1,
 ): string {
     let template = PLAYER_TURN_CHANGED[cpuStrong]
+    if (gameMode === 2) {
+        template = template.split('\n')[1]
+    }
+
     return template.replace('{{word}}', word)
 }
 

@@ -36,6 +36,12 @@ const TIME_LIMIT: Record<number, number> = {
     3: 20,
 }
 
+const HAYAOSHI_CPU_TIME_LIMIT: Record<number, number> = {
+    1: 20,
+    2: 15,
+    3: 10,
+}
+
 interface gameStore {
     isGameStart: boolean
     isGameEnd: boolean
@@ -50,6 +56,8 @@ interface gameStore {
     cpuStrong: number
     timeLimit: number
     timerId: ReturnType<typeof setInterval> | null
+    hataoshiCputimeLimit: number
+    hataoshiCputimerId: ReturnType<typeof setInterval> | null
     currentletter: string
     isCpuThinking: boolean
     cpuMessage: string
@@ -77,6 +85,8 @@ export const useGameStore = defineStore('game', {
         cpuStrong: 1,
         timeLimit: TIME_LIMIT[1],
         timerId: null,
+        hataoshiCputimeLimit: HAYAOSHI_CPU_TIME_LIMIT[1],
+        hataoshiCputimerId: null,
         currentletter: '',
         isCpuThinking: false,
         cpuMessage: '',
@@ -96,6 +106,7 @@ export const useGameStore = defineStore('game', {
             console.log('panelStore.panels', panelStore.panels)
 
             this.timeLimit = TIME_LIMIT[this.cpuStrong]
+            this.hataoshiCputimeLimit = HAYAOSHI_CPU_TIME_LIMIT[this.cpuStrong]
             this.isGameStart = true
 
             const seStore = useSeStore()
@@ -111,7 +122,9 @@ export const useGameStore = defineStore('game', {
             await nextTick()
 
             // CPUのメッセージをセットし、表示完了を待つ
-            await this.setCpuMessage(getCpuMessageWhenGameStart(this.cpuStrong))
+            await this.setCpuMessage(
+                getCpuMessageWhenGameStart(this.cpuStrong, this.gameMode),
+            )
             await this.setCpuMessage(
                 getCpuMessageWhenFirstSelectPanel(this.cpuStrong),
             )
@@ -143,10 +156,15 @@ export const useGameStore = defineStore('game', {
                 getCpuMessageWhenPlayerTurnChanged(
                     this.cpuStrong,
                     this.currentletter,
+                    this.gameMode,
                 ),
             )
 
-            this.startTimer()
+            if (this.gameMode === 1) {
+                this.startTimer()
+            } else {
+                this.startHayaoshiCpuTimer()
+            }
         },
 
         async selectPanel(panelId: number, isPlayerClicked: boolean) {
@@ -192,8 +210,12 @@ export const useGameStore = defineStore('game', {
 
             const seStore = useSeStore()
 
-            if (this.isPlayerTurn) {
+            if (
+                (this.gameMode === 1 && this.isPlayerTurn) ||
+                (this.gameMode === 2 && isPlayerClicked)
+            ) {
                 this.clearTimer()
+                this.clearHayaoshiCpuTimer()
 
                 const cpuMessage = getCpuMessageWhenPlayerSelect(
                     result.matchedWord,
@@ -249,23 +271,31 @@ export const useGameStore = defineStore('game', {
             }
 
             if (result.code === 1) {
-                if (this.isPlayerTurn) {
-                    this.playerScore++
+                if (this.gameMode === 1) {
+                    if (this.isPlayerTurn) {
+                        this.playerScore++
+                    } else {
+                        this.cpuScore++
+                    }
                 } else {
-                    this.cpuScore++
+                    if (isPlayerClicked) {
+                        this.playerScore++
+                    } else {
+                        this.cpuScore++
+                    }
                 }
+
                 panel.isUsed = true
                 this.currentletter = result.nextLetter
             }
 
-            if (this.gameMode === 1) {
-                this.switchTurn()
-            }
+            this.switchTurn()
         },
 
         async switchTurn() {
             console.log('switchTurn')
             this.clearTimer()
+            this.clearHayaoshiCpuTimer()
 
             // 選択できるパネルがあるかの判定→ないならゲーム終了
             const panelStore = usePanelStore()
@@ -286,28 +316,40 @@ export const useGameStore = defineStore('game', {
                 return false
             }
 
-            this.isPlayerTurn = !this.isPlayerTurn
-            this.turn++
+            if (this.gameMode === 1) {
+                this.isPlayerTurn = !this.isPlayerTurn
+                this.turn++
 
-            if (this.isPlayerTurn) {
+                if (this.isPlayerTurn) {
+                    await this.setCpuMessage(
+                        getCpuMessageWhenPlayerTurnChanged(
+                            this.cpuStrong,
+                            this.currentletter,
+                            this.gameMode,
+                        ),
+                    )
+                    this.startTimer()
+                } else {
+                    await sleepWithState(this, 'isSleep', 500)
+
+                    await this.setCpuMessage(
+                        getCpuMessageWhenCpuTurnChanged(this.cpuStrong),
+                    )
+                    await this.setCpuMessage(
+                        getCpuMessageWhenCpuPanelSelectedBefore(this.cpuStrong),
+                    )
+
+                    this.runCpuAction()
+                }
+            } else {
                 await this.setCpuMessage(
                     getCpuMessageWhenPlayerTurnChanged(
                         this.cpuStrong,
                         this.currentletter,
+                        this.gameMode,
                     ),
                 )
-                this.startTimer()
-            } else {
-                await sleepWithState(this, 'isSleep', 500)
-
-                await this.setCpuMessage(
-                    getCpuMessageWhenCpuTurnChanged(this.cpuStrong),
-                )
-                await this.setCpuMessage(
-                    getCpuMessageWhenCpuPanelSelectedBefore(this.cpuStrong),
-                )
-
-                this.runCpuAction()
+                this.startHayaoshiCpuTimer()
             }
         },
 
@@ -392,6 +434,10 @@ export const useGameStore = defineStore('game', {
         },
 
         startTimer() {
+            if (this.gameMode === 2) {
+                return false
+            }
+
             this.clearTimer()
 
             console.log('🔄 タイマーセット')
@@ -429,6 +475,37 @@ export const useGameStore = defineStore('game', {
                 clearInterval(this.timerId)
                 this.timerId = null
                 console.log('🛑 タイマークリア') // クリアされたことを確認
+            }
+        },
+
+        startHayaoshiCpuTimer() {
+            if (this.gameMode === 1) {
+                return false
+            }
+
+            this.clearHayaoshiCpuTimer()
+
+            console.log('🔄 cpuタイマーセット')
+
+            // timeLimit初期値をセット
+            this.hataoshiCputimeLimit = HAYAOSHI_CPU_TIME_LIMIT[this.cpuStrong]
+
+            this.hataoshiCputimerId = setInterval(async () => {
+                if (this.hataoshiCputimeLimit > 0) {
+                    this.hataoshiCputimeLimit--
+                } else if (this.hataoshiCputimeLimit === 0) {
+                    this.hataoshiCputimeLimit = -1
+                    this.clearHayaoshiCpuTimer()
+                    this.runCpuAction()
+                }
+            }, 1000)
+        },
+
+        clearHayaoshiCpuTimer() {
+            if (this.hataoshiCputimerId) {
+                clearInterval(this.hataoshiCputimerId)
+                this.hataoshiCputimerId = null
+                console.log('🛑 cpuタイマークリア')
             }
         },
 

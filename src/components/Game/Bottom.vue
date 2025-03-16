@@ -14,7 +14,10 @@ const cpuImagePath = computed(() => {
 
 <template>
     <div class="GameBottom">
-        <TimeLimit :time="gameStore.timeLimit" />
+        <TimeLimit
+            v-if="gameStore.gameMode === 1"
+            :time="gameStore.timeLimit"
+        />
         <div class="GameBottom__characterStage">
             <div
                 class="GameBottom__characterWrap"
