@@ -40,8 +40,8 @@ const gameStore = useGameStore()
                 <em>timeLimit:</em><span>{{ gameStore.timeLimit }}</span>
             </li>
             <li v-if="gameStore.gameMode === 2">
-                <em>hataoshiCputimeLimit:</em
-                ><span>{{ gameStore.hataoshiCputimeLimit }}</span>
+                <em>hayaoshiCputimeLimit:</em
+                ><span>{{ gameStore.hayaoshiCputimeLimit }}</span>
             </li>
             <li>
                 <em>currentletter:</em

@@ -55,9 +55,10 @@ interface gameStore {
     turn: number
     cpuStrong: number
     timeLimit: number
+    timeLimitStatic: number
     timerId: ReturnType<typeof setInterval> | null
-    hataoshiCputimeLimit: number
-    hataoshiCputimerId: ReturnType<typeof setInterval> | null
+    hayaoshiCputimeLimit: number
+    hayaoshiCputimerId: ReturnType<typeof setInterval> | null
     currentletter: string
     isCpuThinking: boolean
     cpuMessage: string
@@ -84,9 +85,10 @@ export const useGameStore = defineStore('game', {
         turn: 1,
         cpuStrong: 1,
         timeLimit: TIME_LIMIT[1],
+        timeLimitStatic: TIME_LIMIT[1],
         timerId: null,
-        hataoshiCputimeLimit: HAYAOSHI_CPU_TIME_LIMIT[1],
-        hataoshiCputimerId: null,
+        hayaoshiCputimeLimit: HAYAOSHI_CPU_TIME_LIMIT[1],
+        hayaoshiCputimerId: null,
         currentletter: '',
         isCpuThinking: false,
         cpuMessage: '',
@@ -105,8 +107,12 @@ export const useGameStore = defineStore('game', {
             panelStore.initPanels() // ここでパネルを初期化
             console.log('panelStore.panels', panelStore.panels)
 
+            this.timeLimitStatic =
+                this.gameMode === 1
+                    ? TIME_LIMIT[this.cpuStrong]
+                    : HAYAOSHI_CPU_TIME_LIMIT[this.cpuStrong]
             this.timeLimit = TIME_LIMIT[this.cpuStrong]
-            this.hataoshiCputimeLimit = HAYAOSHI_CPU_TIME_LIMIT[this.cpuStrong]
+            this.hayaoshiCputimeLimit = HAYAOSHI_CPU_TIME_LIMIT[this.cpuStrong]
             this.isGameStart = true
 
             const seStore = useSeStore()
@@ -488,13 +494,13 @@ export const useGameStore = defineStore('game', {
             console.log('🔄 cpuタイマーセット')
 
             // timeLimit初期値をセット
-            this.hataoshiCputimeLimit = HAYAOSHI_CPU_TIME_LIMIT[this.cpuStrong]
+            this.hayaoshiCputimeLimit = HAYAOSHI_CPU_TIME_LIMIT[this.cpuStrong]
 
-            this.hataoshiCputimerId = setInterval(async () => {
-                if (this.hataoshiCputimeLimit > 0) {
-                    this.hataoshiCputimeLimit--
-                } else if (this.hataoshiCputimeLimit === 0) {
-                    this.hataoshiCputimeLimit = -1
+            this.hayaoshiCputimerId = setInterval(async () => {
+                if (this.hayaoshiCputimeLimit > 0) {
+                    this.hayaoshiCputimeLimit--
+                } else if (this.hayaoshiCputimeLimit === 0) {
+                    this.hayaoshiCputimeLimit = -1
                     this.clearHayaoshiCpuTimer()
                     this.runCpuAction()
                 }
@@ -502,9 +508,9 @@ export const useGameStore = defineStore('game', {
         },
 
         clearHayaoshiCpuTimer() {
-            if (this.hataoshiCputimerId) {
-                clearInterval(this.hataoshiCputimerId)
-                this.hataoshiCputimerId = null
+            if (this.hayaoshiCputimerId) {
+                clearInterval(this.hayaoshiCputimerId)
+                this.hayaoshiCputimerId = null
                 console.log('🛑 cpuタイマークリア')
             }
         },

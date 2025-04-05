@@ -5,32 +5,60 @@ const gameStore = useGameStore()
 
 <template>
     <div class="GameMain">
-        <Score
-            :score="gameStore.playerScore"
-            :passScore="gameStore.passScore"
-        />
         <ShiritoiArea />
-        <Score :score="gameStore.cpuScore" />
+        <ul class="GameMain__scores">
+            <li class="GameMain__score">
+                <Score :score="gameStore.playerScore" />
+            </li>
+            <li class="GameMain__score GameMain__score--enemy">
+                <Score :score="gameStore.cpuScore" isEnemy />
+            </li>
+        </ul>
     </div>
 </template>
 
 <style lang="scss" scoped>
 .GameMain {
-    max-width: 1200px;
-    height: 430px;
+    max-width: 900px;
     display: flex;
+    flex-direction: column;
+    row-gap: 12px;
     padding: 0 12px 0;
     margin: 0 auto;
+    z-index: 1;
 
-    @media screen and (max-width: 1224px) {
-        padding: var.vw(52) var.vw(12) 0;
-        height: var.vw(430);
+    &__scores {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__score {
+        width: 49%;
+        height: 46px;
+    }
+
+    @media screen and (max-width: 1220px) {
+        padding: 0;
+
+        &__score {
+            height: var.vw(46);
+        }
     }
 
     @media screen and (max-width: 600px) {
         flex-direction: column;
         height: auto;
-        row-gap: 4px;
+        row-gap: 12px;
+
+        &__scores {
+            flex-direction: column;
+            row-gap: 12px;
+        }
+
+        &__score {
+            width: 100%;
+            height: 30px;
+        }
     }
 }
 </style>

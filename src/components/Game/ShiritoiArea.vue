@@ -114,25 +114,25 @@ watch(
     &__panels {
         width: 100%;
         height: 100%;
-        background: url(/src/assets/images/board.png) no-repeat center top;
-        background-size: cover;
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        padding: 0 4px;
+        /* padding: 0 4px; */
         transition: 0.2s ease opacity;
     }
 
     &__panel {
-        width: calc((100% / 9) - 4px);
-        background-color: rgba(255, 255, 255, 0.2);
+        position: relative;
+        width: calc((100% / 9));
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 8px;
         overflow: hidden;
-        border: 2px solid orange;
+        border: 1px solid #ccc;
+        border-image: url(/src/assets/images/panel.png) 12 fill stretch;
+        border-width: 12px;
     }
 
     &__cpuCursor {
@@ -148,17 +148,19 @@ watch(
 
     @media screen and (max-width: 1224px) {
         &__panels {
-            padding: 0 var.vw(4);
+            /* padding: 0 var.vw(4); */
         }
 
         &__panel {
-            width: calc((100% / 9) - var.vw(8));
+            width: calc((100% / 9));
         }
     }
 
     @media screen and (max-width: 600px) {
         &__panel {
-            width: calc((100% / 6) - var.vw(8));
+            width: calc((100% / 6));
+            border-image: url(/src/assets/images/panel.png) 11 fill stretch;
+            border-width: 8px;
         }
 
         &__cpuCursor {

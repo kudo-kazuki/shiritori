@@ -8,11 +8,13 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Bottom: typeof import('./components/Game/Bottom.vue')['default']
+    CpuImage: typeof import('./components/Game/CpuImage.vue')['default']
     CpuMessage: typeof import('./components/Game/CpuMessage.vue')['default']
     Debug: typeof import('./components/Game/Debug.vue')['default']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     Main: typeof import('./components/Game/Main.vue')['default']
     Panel: typeof import('./components/Game/Panel.vue')['default']
+    PlayerImage: typeof import('./components/Game/PlayerImage.vue')['default']
     PreLoad: typeof import('./components/PreLoad.vue')['default']
     Radio: typeof import('./components/Radio.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

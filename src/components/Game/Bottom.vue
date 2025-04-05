@@ -1,16 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import playerImage from '@/assets/images/player.png'
-import fireImage from '@/assets/images/fire.gif'
 import { useGameStore } from '@/stores/game'
 const gameStore = useGameStore()
-
-const cpuImagePath = computed(() => {
-    return new URL(
-        `../../assets/images/cpu/${gameStore.cpuStrong}.png`,
-        import.meta.url,
-    ).href
-})
 </script>
 
 <template>
@@ -18,51 +8,17 @@ const cpuImagePath = computed(() => {
         <TimeLimit
             v-if="gameStore.gameMode === 1"
             :time="gameStore.timeLimit"
+            :maxTime="gameStore.timeLimitStatic"
         />
         <div class="GameBottom__characterStage">
-            <div
-                class="GameBottom__characterWrap"
-                :class="{
-                    'GameBottom__characterWrap--start animate__slideInLeft':
-                        gameStore.isGameStart,
-                }"
-            >
-                <img
-                    v-if="gameStore.gameResult !== 'lose'"
-                    class="GameBottom__characterImage"
-                    :src="playerImage"
-                    alt=""
-                />
-                <img
-                    v-if="gameStore.gameResult === 'lose'"
-                    class="GameBottom__characterImage GameBottom__characterImage--fire"
-                    :src="fireImage"
-                    alt=""
-                />
-            </div>
             <CpuMessage class="GameBottom__cpuMessage" />
-            <div
-                v-if="gameStore.isCpuDisplay"
-                class="GameBottom__characterWrap"
-                :class="{
-                    'GameBottom__characterWrap--blinking':
-                        gameStore.isCpuBlinking,
-                    'GameBottom__characterWrap--start animate__bounceInRight':
-                        gameStore.isGameStart && !gameStore.isCpuBlinking,
-                }"
-            >
-                <img
-                    class="GameBottom__characterImage"
-                    :src="cpuImagePath"
-                    alt=""
-                />
-            </div>
         </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
 .GameBottom {
+    position: relative;
     display: flex;
     flex-direction: column;
     row-gap: 20px;
@@ -71,72 +27,28 @@ const cpuImagePath = computed(() => {
     &__characterStage {
         display: flex;
         justify-content: center;
-        column-gap: 40px;
     }
 
     & &__cpuMessage {
-        width: 500px;
-    }
-
-    &__characterWrap {
-        position: relative;
-
-        &--blinking {
-            animation: blinkAnimation 0.08s steps(2, start) infinite;
-        }
-
-        &--start {
-            animation-duration: 1s;
-        }
-    }
-
-    &__characterImage {
-        height: 150px;
-
-        &--fire {
-            /*
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            */
-        }
+        width: 526px;
+        height: 130px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     @media screen and (max-width: 1224px) {
-        &__characterStage {
-            column-gap: var.vw(40);
-        }
-
         & &__cpuMessage {
             width: var.vw(500);
-        }
-
-        &__characterImage {
-            height: var.vw(150);
+            height: var.vw(130);
         }
     }
 
     @media screen and (max-width: 600px) {
         & &__cpuMessage {
             width: 200px;
+            height: 64px;
         }
-
-        &__characterImage {
-            height: 60px;
-        }
-    }
-}
-
-@keyframes blinkAnimation {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
     }
 }
 </style>

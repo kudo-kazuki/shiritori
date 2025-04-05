@@ -10,14 +10,26 @@ const gameStore = useGameStore()
 <style lang="scss" scoped>
 .GameCpuMessage {
     text-align: left;
-    padding: 20px;
+    color: #462522;
     border: 1px solid #333;
-    border-radius: 5px;
-    background-color: #fff;
+    /* border-radius: 5px; */
+
+    /*
+    border-image: url(/src/assets/images/fukidashi.png) 37 fill stretch;
+    border-width: 35px;
+    */
+
+    /*
+    border-image: url(/src/assets/images/fukidashi.png) 35 56 44 41 fill round;
+    border-width: 82px 103px 82px 82px;
+    */
+
+    border-image: url(/src/assets/images/fukidashi.png) 62 fill stretch repeat;
+    border-width: 59px 62px 64px 60px;
 
     @media screen and (max-width: 1224px) {
-        padding: var.vw(20);
         font-size: var.vw(18);
+        border-width: var.vw(59) var.vw(62) var.vw(64) var.vw(60);
     }
 
     @media screen and (max-width: 600px) {

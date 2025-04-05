@@ -1,110 +1,65 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import scorePlayer from '@/assets/images/score_player.png'
+import scoreEnemy from '@/assets/images/score_enemy.png'
 
 interface Props {
     score?: number
     passScore?: number
+    isEnemy?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {})
 
-// `score` が奇数のとき、2番目にダミーの `●` を追加
-const scoreList = computed<Array<number | null>>(() => {
-    if (!props.score || props.score <= 0) return []
-
-    const list: Array<number | null> = Array.from(
-        { length: props.score },
-        (_, i) => i + 1,
-    )
-
-    // 奇数ならリストの2番目（インデックス1）に `null` を挿入
-    if (props.score % 2 !== 0) {
-        list.splice(1, 0, null) // 2番目に `null`（ダミーの `●`）を挿入
-    }
-
-    return list
+const icon = computed(() => {
+    return props.isEnemy ? scoreEnemy : scorePlayer
 })
 </script>
 
 <template>
-    <div class="GameScore">
-        <div class="GameScore__inner">
-            <ul v-if="score" class="GameScore__scores">
-                <li
-                    v-for="(n, index) in scoreList"
-                    :key="index"
-                    class="GameScore__score"
-                    :class="{ 'GameScore__score--dummy': n === null }"
-                    :aria-hidden="n === null"
-                    :role="n === null ? 'presentation' : undefined"
-                >
-                    &nbsp;
-                </li>
-            </ul>
-        </div>
-    </div>
+    <ul class="GameScore" :class="{ 'GameScore--enemy': isEnemy }">
+        <li
+            v-for="(n, index) in score"
+            :key="n + index"
+            class="GameScore__score"
+        >
+            <img class="GameScore__icon" :src="icon" alt="" />
+        </li>
+    </ul>
 </template>
 
 <style lang="scss" scoped>
-$scoreSize: 30px;
-$scoreSizeSp: 12px;
-
 .GameScore {
-    width: 104px;
-    height: 100%;
-    flex-shrink: 0;
-    background-color: #111;
-    border-radius: 10px;
-    border: 6px solid #ccc;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
 
-    &__inner {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding: 8px;
-    }
-
-    &__scores {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 4px;
-        width: 100%;
+    &--enemy {
+        text-align: right;
+        flex-direction: row-reverse;
     }
 
     &__score {
-        width: $scoreSize;
-        height: $scoreSize;
-        background-color: yellow;
-        border-radius: 50%;
+        line-height: 0;
+    }
 
-        &--dummy {
-            background-color: transparent;
+    &__icon {
+        width: 20px;
+    }
+
+    @media screen and (max-width: 1220px) {
+        &__icon {
+            width: var.vw(20);
         }
     }
 
     @media screen and (max-width: 600px) {
-        width: 100%;
-        height: auto;
-        border-width: 3px;
-
-        &__inner {
-            height: $scoreSizeSp * 2;
-            justify-content: center;
+        &--enemy {
+            text-align: left;
+            flex-direction: row;
         }
 
-        &__scores {
-            justify-content: flex-start;
-        }
-
-        &__score {
-            width: $scoreSizeSp;
-            height: $scoreSizeSp;
-
-            &--dummy {
-                display: none;
-            }
+        &__icon {
+            width: 12px;
         }
     }
 }

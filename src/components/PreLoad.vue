@@ -3,6 +3,11 @@ import { ref, onMounted } from 'vue'
 import { useSeStore } from '@/stores/se'
 import { useBgmStore } from '@/stores/bgm'
 import player from '@/assets/images/player.png'
+import panel from '@/assets/images/panel.png'
+import cpu_cursor from '@/assets/images/cpu_cursor.png'
+import score_enemy from '@/assets/images/score_enemy.png'
+import score_player from '@/assets/images/score_player.png'
+import fukidashi from '@/assets/images/fukidashi.png'
 
 const seStore = useSeStore()
 const bgmStore = useBgmStore()
@@ -53,6 +58,21 @@ const panelFilePaths = ref(
     <ul class="PreLoad">
         <li>
             <img :src="player" alt="" />
+        </li>
+        <li>
+            <img :src="panel" alt="" />
+        </li>
+        <li>
+            <img :src="cpu_cursor" alt="" />
+        </li>
+        <li>
+            <img :src="score_enemy" alt="" />
+        </li>
+        <li>
+            <img :src="score_player" alt="" />
+        </li>
+        <li>
+            <img :src="fukidashi" alt="" />
         </li>
         <li v-for="(filePath, index) in cpuFilePaths" :key="index">
             <img :src="filePath" alt="" />
