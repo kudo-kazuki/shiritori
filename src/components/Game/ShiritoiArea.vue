@@ -2,40 +2,97 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { useGameStore } from '@/stores/game'
 import { usePanelStore } from '@/stores/panel'
+import { useWindowHeight } from '@/composables/useWindowHeight'
+import { useWindowWidthAndDevice } from '@/composables/useWindowWidthAndDevice'
 import cpuCursor from '@/assets/images/cpu_cursor.png'
 
 const panelStore = usePanelStore()
 const gameStore = useGameStore()
+const { windowHeight } = useWindowHeight()
+const { deviceType } = useWindowWidthAndDevice()
 
 const panelRef = ref<HTMLLIElement[]>([]) // 各パネルを参照する
 
-// 各 `li` の高さを `getComputedStyle` で小数点まで正確に設定
-const adjustPanelSize = () => {
-    panelRef.value.forEach((panel) => {
-        if (panel) {
-            const computedWidth = getComputedStyle(panel).width // 小数点まで取得
-            panel.style.height = computedWidth // 幅と同じ値を高さに適用
+const MAX_HEIGHT_ROW3 = 650
+const MAX_HEIGHT_ROW2 = 500
+const isLandScape = ref(true) //横長かどうか
+const updateIsLandScape = () => {
+    isLandScape.value = window.innerWidth > window.innerHeight
+}
+
+const columns = computed(() => {
+    let col = 9
+
+    if (deviceType.value === 'pc') {
+        if (isLandScape.value) {
+            if (windowHeight.value < MAX_HEIGHT_ROW2) {
+                col = 18
+            } else if (windowHeight.value < MAX_HEIGHT_ROW3) {
+                col = 12
+            }
+        } else {
+            col = 6
         }
-    })
+    } else if (deviceType.value === 'tablet') {
+        if (isLandScape.value) {
+            if (windowHeight.value < MAX_HEIGHT_ROW2) {
+                col = 18
+            } else if (windowHeight.value < MAX_HEIGHT_ROW3) {
+                col = 12
+            }
+        } else {
+            col = 6
+        }
+    } else {
+        if (isLandScape.value) {
+            if (windowHeight.value < MAX_HEIGHT_ROW2) {
+                col = 18
+            } else if (windowHeight.value < MAX_HEIGHT_ROW3) {
+                col = 12
+            }
+        } else {
+            col = 6
+        }
+    }
+
+    return col
+})
+
+// 各 `li` の高さを `getComputedStyle` で小数点まで正確に設定
+const adjustPanelSize = async () => {
+    await nextTick()
+    console.log('adjustPanelSize')
+    setTimeout(() => {
+        panelRef.value.forEach((panel) => {
+            if (panel) {
+                const computedWidth = getComputedStyle(panel).width // 小数点まで取得
+                panel.style.height = computedWidth // 幅と同じ値を高さに適用
+            }
+        })
+    }, 20)
 }
 
 const isAdjustCompleted = ref(false)
 
 // コンポーネントがマウントされたら高さを調整
 onMounted(async () => {
+    updateIsLandScape()
+
     await nextTick()
 
     setTimeout(() => {
         adjustPanelSize()
         isAdjustCompleted.value = true
-    }, 50)
+    }, 10)
 
     window.addEventListener('resize', adjustPanelSize) // ウィンドウサイズ変更時も更新
+    window.addEventListener('resize', updateIsLandScape)
 })
 
 // コンポーネントが破棄されたらイベントリスナーを削除
 onBeforeUnmount(() => {
     window.removeEventListener('resize', adjustPanelSize)
+    window.removeEventListener('resize', updateIsLandScape)
 })
 
 const cpuCursorPos = ref<{
@@ -84,6 +141,7 @@ watch(
                 v-for="panel in panelStore.panels"
                 :key="panel.id"
                 class="GameShiritoiArea__panel"
+                :class="`GameShiritoiArea__panel--col${columns}`"
                 :data-id="panel.id"
                 ref="panelRef"
             >
@@ -124,7 +182,6 @@ watch(
 
     &__panel {
         position: relative;
-        width: calc((100% / 9));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -133,6 +190,26 @@ watch(
         border: 1px solid #ccc;
         border-image: url(/src/assets/images/panel.png) 12 fill stretch;
         border-width: 12px;
+
+        &--col18 {
+            width: calc((100% / 18));
+        }
+
+        &--col12 {
+            width: calc((100% / 12));
+        }
+
+        &--col9 {
+            width: calc((100% / 9));
+        }
+
+        &--col6 {
+            width: calc((100% / 6));
+        }
+
+        &--col4 {
+            width: calc((100% / 4));
+        }
     }
 
     &__cpuCursor {
@@ -152,13 +229,11 @@ watch(
         }
 
         &__panel {
-            width: calc((100% / 9));
         }
     }
 
     @media screen and (max-width: 600px) {
         &__panel {
-            width: calc((100% / 6));
             border-image: url(/src/assets/images/panel.png) 11 fill stretch;
             border-width: 8px;
         }
