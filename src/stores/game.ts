@@ -54,6 +54,7 @@ interface gameStore {
     cpuScore: number
     turn: number
     cpuStrong: number
+    cpuAction: string
     timeLimit: number
     timeLimitStatic: number
     timerId: ReturnType<typeof setInterval> | null
@@ -69,6 +70,7 @@ interface gameStore {
     isCpuBlinking: boolean
     isCpuDisplay: boolean
     isDebug: boolean
+    isDebugShow: boolean
 }
 
 export const useGameStore = defineStore('game', {
@@ -84,6 +86,7 @@ export const useGameStore = defineStore('game', {
         cpuScore: 0,
         turn: 1,
         cpuStrong: 1,
+        cpuAction: 'idle',
         timeLimit: TIME_LIMIT[1],
         timeLimitStatic: TIME_LIMIT[1],
         timerId: null,
@@ -99,7 +102,8 @@ export const useGameStore = defineStore('game', {
         isCpuMessageTyping: false,
         isCpuBlinking: false,
         isCpuDisplay: true,
-        isDebug: false,
+        isDebug: true,
+        isDebugShow: true,
     }),
     actions: {
         async startGame() {
@@ -544,6 +548,10 @@ export const useGameStore = defineStore('game', {
 
                 typeNextCharacter() // アニメーション開始
             })
+        },
+
+        toggleDebugArea() {
+            this.isDebugShow = !this.isDebugShow
         },
     },
 

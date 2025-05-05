@@ -45,6 +45,14 @@ const cpuFiles = import.meta.glob('/src/assets/images/cpu/*', { eager: true })
 const cpuFilePaths = ref(
     Object.values(cpuFiles).map((mod: any) => mod.default), // ファイルの URL を取得
 )
+const cpuActionsFiles = import.meta.glob('/src/assets/images/cpu/actions/*', {
+    eager: true,
+})
+const cpuActionsFilePaths = ref(
+    Object.values(cpuActionsFiles).map((mod: any) => mod.default), // ファイルの URL を取得
+)
+
+console.log(cpuActionsFilePaths.value)
 
 const panelFiles = import.meta.glob('/src/assets/images/panels/*', {
     eager: true,
@@ -75,6 +83,9 @@ const panelFilePaths = ref(
             <img :src="fukidashi" alt="" />
         </li>
         <li v-for="(filePath, index) in cpuFilePaths" :key="index">
+            <img :src="filePath" alt="" />
+        </li>
+        <li v-for="(filePath, index) in panelFilePaths" :key="index">
             <img :src="filePath" alt="" />
         </li>
         <li v-for="(filePath, index) in panelFilePaths" :key="index">

@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Bottom: typeof import('./components/Game/Bottom.vue')['default']
+    CpuActions: typeof import('./components/Game/CpuActions.vue')['default']
     CpuImage: typeof import('./components/Game/CpuImage.vue')['default']
     CpuMessage: typeof import('./components/Game/CpuMessage.vue')['default']
     Debug: typeof import('./components/Game/Debug.vue')['default']

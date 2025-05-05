@@ -39,14 +39,14 @@ const gameStore = useGameStore()
     padding: 0 20px 92px;
 
     & &__character {
-        width: 321px;
-        height: 351px;
+        width: 320px;
+        height: 350px;
         position: absolute;
         bottom: 20px;
         left: 0;
         line-height: 0;
         z-index: 0;
-        background-color: rgba(0, 0, 0, 0.5);
+        /* background-color: rgba(0, 0, 0, 0.5); */
 
         &--enemy {
             left: auto;

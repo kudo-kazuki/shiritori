@@ -1,23 +1,31 @@
 <script setup lang="ts">
-import { useGameStore } from '@/stores/game'
+import { computed } from 'vue'
 
 interface Props {
-    isPlayer?: boolean
+    id: number
+    action: string
 }
 
-withDefaults(defineProps<Props>(), {})
+const props = withDefaults(defineProps<Props>(), {
+    action: 'idle',
+})
 
-const gameStore = useGameStore()
+const imagePath = computed(() => {
+    return new URL(
+        `../../assets/images/cpu/actions/${props.id}_${props.action}.webp`,
+        import.meta.url,
+    ).href
+})
 </script>
 
 <template>
-    <div class="GameCharacter">
-        <CpuActions :id="gameStore.cpuStrong" :action="gameStore.cpuAction" />
+    <div class="GameCpuActions">
+        <img class="GameCpuActions__image" :src="imagePath" alt="" />
     </div>
 </template>
 
 <style lang="scss" scoped>
-.GameCharacter {
+.GameCpuActions {
     &__image {
         max-width: none;
         width: 100%;
