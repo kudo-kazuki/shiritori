@@ -71,6 +71,7 @@ interface gameStore {
     isCpuDisplay: boolean
     isDebug: boolean
     isDebugShow: boolean
+    isDebugWords: boolean
 }
 
 export const useGameStore = defineStore('game', {
@@ -104,6 +105,7 @@ export const useGameStore = defineStore('game', {
         isCpuDisplay: true,
         isDebug: true,
         isDebugShow: true,
+        isDebugWords: true,
     }),
     actions: {
         async startGame() {
@@ -211,6 +213,8 @@ export const useGameStore = defineStore('game', {
                 return
             }
 
+            this.cpuAction = 'idle'
+
             const result = checkPanelWords(this.currentletter, panel.words) //1 or 2 or 3が返るように（1:オッケー、2：間違い、3：「ん」または「ン」が最後に来るものが引っ掛かった）
             console.log('result', result)
             console.log('-----------------')
@@ -236,10 +240,12 @@ export const useGameStore = defineStore('game', {
                 if (result.code === 1) {
                     seStore.playSE('correct')
                     await sleepWithState(this, 'isSleep', 2000)
+                    this.cpuAction = 'amazed'
                     await this.setCpuMessage(cpuMessage)
                 } else if (result.code === 2) {
                     seStore.playSE('incorrect')
                     await sleepWithState(this, 'isSleep', 2000)
+                    this.cpuAction = 'joy'
                     await this.setCpuMessage(cpuMessage)
                 } else {
                     seStore.playSE('incorrect')
@@ -253,6 +259,7 @@ export const useGameStore = defineStore('game', {
                 if (result.code === 1) {
                     seStore.playSE('correct')
                     await sleepWithState(this, 'isSleep', 2000)
+                    this.cpuAction = 'joy'
                     await this.setCpuMessage(
                         getCpuMessageWhenCpuPanelSelected(
                             this.cpuStrong,
@@ -262,6 +269,7 @@ export const useGameStore = defineStore('game', {
                 } else if (result.code === 2) {
                     seStore.playSE('incorrect')
                     await sleepWithState(this, 'isSleep', 2000)
+                    this.cpuAction = 'sad'
                     await this.setCpuMessage(
                         getCpuMessageWhenCpuPanelSelectedWrong(this.cpuStrong),
                     )
@@ -306,6 +314,7 @@ export const useGameStore = defineStore('game', {
             console.log('switchTurn')
             this.clearTimer()
             this.clearHayaoshiCpuTimer()
+            this.cpuAction = 'idle'
 
             // 選択できるパネルがあるかの判定→ないならゲーム終了
             const panelStore = usePanelStore()
@@ -378,6 +387,7 @@ export const useGameStore = defineStore('game', {
             switch (result) {
                 case 'win':
                     // プレイヤーが勝った
+                    this.cpuAction = 'sad'
                     await this.setCpuMessage(
                         getCpuMessageWhenWinPlayer(this.cpuStrong),
                     )
@@ -391,6 +401,7 @@ export const useGameStore = defineStore('game', {
                     break
                 case 'lose':
                     // プレイヤーが負け
+                    this.cpuAction = 'joy'
                     await this.setCpuMessage(
                         getCpuMessageWhenLosePlayer(this.cpuStrong),
                     )
@@ -400,6 +411,7 @@ export const useGameStore = defineStore('game', {
                     break
                 case 'draw':
                     // 引き分け
+                    this.cpuAction = 'sad'
                     await this.setCpuMessage(
                         getCpuMessageWhenDraw(this.cpuStrong),
                     )
@@ -470,6 +482,7 @@ export const useGameStore = defineStore('game', {
                     seStore.playSE('incorrect')
 
                     await sleepWithState(this, 'isSleep', 2000) // 待機
+                    this.cpuAction = 'joy'
                     await this.setCpuMessage(
                         getCpuMessageWhenTimeOver(this.cpuStrong),
                     )

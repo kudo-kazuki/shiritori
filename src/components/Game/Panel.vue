@@ -52,7 +52,10 @@ watch(
         @click="onClick"
     >
         <img v-if="!isUsed" :src="imgPath" alt="" />
-        <span v-if="gameStore.isDebug" class="GamePanel__debugWords">
+        <span
+            v-if="gameStore.isDebug && gameStore.isDebugWords"
+            class="GamePanel__debugWords"
+        >
             {{ id }}<br />
             <span v-for="word in words" class="GamePanel__debugWord"
                 >{{ word }},</span

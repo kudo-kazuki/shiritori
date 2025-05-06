@@ -9,7 +9,6 @@ const endGame = (result: 'win' | 'lose' | 'draw') => {
 const CPU_ACTION_NAME_MAP = {
     idle: '通常',
     amazed: 'びっくり',
-    amazed_loop: 'びっくりループ',
     joy: '喜び',
     sad: '悲しみ',
 }
@@ -52,18 +51,45 @@ const changeCpuAction = (action: string) => {
                 <li>
                     <em>playerScore:</em
                     ><span>{{ gameStore.playerScore }}</span>
+                    <input
+                        class="GameDebug__inputStatus"
+                        type="number"
+                        v-model="gameStore.playerScore"
+                        min="0"
+                        max="36"
+                    />
                 </li>
                 <li>
                     <em>cpuScore:</em><span>{{ gameStore.cpuScore }}</span>
+                    <input
+                        class="GameDebug__inputStatus"
+                        type="number"
+                        v-model="gameStore.cpuScore"
+                        min="0"
+                        max="36"
+                    />
                 </li>
                 <li>
                     <em>turn:</em><span>{{ gameStore.turn }}</span>
                 </li>
                 <li>
                     <em>cpuStrong:</em><span>{{ gameStore.cpuStrong }}</span>
+                    <input
+                        class="GameDebug__inputStatus"
+                        type="number"
+                        v-model="gameStore.cpuStrong"
+                        min="1"
+                        max="3"
+                    />
                 </li>
                 <li v-if="gameStore.gameMode === 1">
                     <em>timeLimit:</em><span>{{ gameStore.timeLimit }}</span>
+                    <input
+                        class="GameDebug__inputStatus"
+                        type="number"
+                        v-model="gameStore.timeLimit"
+                        min="1"
+                    />
                 </li>
                 <li v-if="gameStore.gameMode === 2">
                     <em>hayaoshiCputimeLimit:</em
@@ -87,6 +113,15 @@ const changeCpuAction = (action: string) => {
                 </li>
                 <li>
                     <em>isDebug:</em><span>{{ gameStore.isDebug }}</span>
+                </li>
+                <li>
+                    <em>isDebugWords:</em
+                    ><span>{{ gameStore.isDebugWords }}</span>
+                    <input
+                        class="GameDebug__inputStatus"
+                        type="checkbox"
+                        v-model="gameStore.isDebugWords"
+                    />
                 </li>
             </ul>
 
@@ -154,6 +189,11 @@ const changeCpuAction = (action: string) => {
     }
 
     &__statusList {
+        li {
+            display: flex;
+            align-items: center;
+        }
+
         li + li {
             margin-top: 4px;
         }
@@ -162,6 +202,19 @@ const changeCpuAction = (action: string) => {
             font-weight: bold;
             font-style: inherit;
             padding-right: 8px;
+        }
+    }
+
+    &__inputStatus {
+        width: 60px;
+        border: 1px solid #333;
+        margin-left: 8px;
+        border-radius: 4px;
+        padding: 0 4px;
+        cursor: pointer;
+
+        &[type='checkbox'] {
+            width: auto;
         }
     }
 
