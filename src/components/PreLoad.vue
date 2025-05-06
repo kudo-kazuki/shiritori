@@ -7,6 +7,7 @@ import panel from '@/assets/images/panel.png'
 import cpu_cursor from '@/assets/images/cpu_cursor.png'
 import score_enemy from '@/assets/images/score_enemy.png'
 import score_player from '@/assets/images/score_player.png'
+import sparkle from '@/assets/images/sparkle.webp'
 import fukidashi from '@/assets/images/fukidashi.png'
 
 const seStore = useSeStore()
@@ -78,6 +79,9 @@ const panelFilePaths = ref(
         </li>
         <li>
             <img :src="score_player" alt="" />
+        </li>
+        <li>
+            <img :src="sparkle" alt="" />
         </li>
         <li>
             <img :src="fukidashi" alt="" />

@@ -34,14 +34,14 @@ const gameStore = useGameStore()
 
     &__score {
         width: 49%;
-        height: 46px;
+        height: 48px;
     }
 
     @media screen and (max-width: 1220px) {
         padding: 0;
 
         &__score {
-            height: var.vw(46);
+            height: var.vw(48);
         }
     }
 
