@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useWindowHeight } from '@/composables/useWindowHeight'
 import { useWindowWidthAndDevice } from '@/composables/useWindowWidthAndDevice'
 import { useGameStore } from '@/stores/game'
+import { useWindowSize } from '@vueuse/core'
 
 const gameStore = useGameStore()
 
-const { windowHeight } = useWindowHeight()
-const { windowWidth, deviceType } = useWindowWidthAndDevice()
+const { deviceType } = useWindowWidthAndDevice()
 
 onMounted(() => {
     // gameStore.startGame()
 })
+
+const { width: windowWidth, height: windowHeight } = useWindowSize()
 </script>
 
 <template>
