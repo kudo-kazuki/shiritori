@@ -103,7 +103,7 @@ export const useGameStore = defineStore('game', {
         isCpuMessageTyping: false,
         isCpuBlinking: false,
         isCpuDisplay: true,
-        isDebug: true,
+        isDebug: false,
         isDebugShow: true,
         isDebugWords: true,
     }),
